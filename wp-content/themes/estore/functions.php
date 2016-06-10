@@ -191,3 +191,82 @@ require get_template_directory() . '/inc/admin/meta-boxes.php';
 if ( is_admin() ) {
 	require get_template_directory() . '/inc/admin/class-estore-admin.php';
 }
+
+
+/**
+ * Simple Example of
+ *
+ * 1. how to register new post type.
+ * usage: <?php register_post_type( $post_type, $args ); ?>
+ * https://codex.wordpress.org/Function_Reference/register_post_type
+ *
+ *
+ * 2. how to register taxonomy to adds or overwrites a taxonomy to existing one. ex) Category, Tag ..
+ * usage: <?php register_taxonomy( $taxonomy, $object_type, $args ); ?>
+ * - https://codex.wordpress.org/Function_Reference/register_taxonomy
+ *
+ *
+ * 3. how to add shortcode
+ * https://codex.wordpress.org/Shortcode
+ * https://codex.wordpress.org/Shortcode_API
+ */
+
+/*
+	add_action('init','create_post_type');
+	function create_post_type(){
+
+		$arr = [
+			'labels' => [
+				'name' => __( 'Tickets' ),
+				'singular_name' => __( 'Ticket' )
+			],
+
+			'publicly_queryable' => true,
+			'show_in_nav_menus' => true,
+			'show_ui' => true,
+			'taxonomies' => true,
+			'supports' => [
+				'title',
+				'editor'
+			]
+		];
+
+		register_post_type('ticket_product', $arr);
+	}
+
+
+	add_action('init','define_ticket_category');
+	function define_ticket_category(){
+		register_taxonomy('tck_category','ticket_product',
+			array(
+				'hierarchical' => true,
+				'label' => 'ticket_category',
+				'query_var' => true,
+				'rewrite' => true
+			)
+		);
+	}
+
+	add_action('init','define_ticket_tag');
+
+	function define_ticket_tag(){
+		register_taxonomy('tck_tag','ticket_product',
+			array(
+				'hierarchical' => false,
+				'label' => 'ticket_tag',
+				'query_var' => true,
+				'rewrite' => true
+			));
+	}
+
+
+	add_shortcode('wonsong', 'create');
+	function create($att){
+		var_dump($att);
+		echo 'hello buddy'. $att;
+	}
+*/
+
+
+
+
