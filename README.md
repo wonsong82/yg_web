@@ -12,6 +12,14 @@ this unzips core wordpress files
 yg/web> git reset --hard
 this resets and brings sources over written by previous unzip to up-to-date  
 
+to setup local db user :
+>create user yguser@'%' identified by '1gobaesong';
+
+>grant all privileges on ygdb.* to 'yguser'@'*' identified by '1gobaesong';
+
+>flush privileges;
+
+
 below is the initial wp-config.php content.  copy and create it in the web folder
 /* -------------------------------------------------- */
 <?php
