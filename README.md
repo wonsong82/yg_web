@@ -18,4 +18,5 @@ to setup local db user :
 >flush privileges;
 
 
-below is the initial wp-config.php content.  
+below is the initial wp-config.php content.
+https://bitbucket.org/ygpresents/web/downloads/wp-config.php
