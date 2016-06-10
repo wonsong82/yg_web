@@ -8,8 +8,11 @@ this creates web folder and pulls source
 yg>cd web
 
 yg/web> tar -xvf latest.tar.gz --strip-components=1
+
 this unzips core wordpress files
+
 yg/web> git reset --hard
+
 this resets and brings sources over written by previous unzip to up-to-date  
 
 to setup local db user :
