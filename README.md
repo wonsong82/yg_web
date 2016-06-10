@@ -20,7 +20,10 @@ to setup local db user :
 >flush privileges;
 
 
-below is the initial wp-config.php content.  copy and create it in the web folder
+below is the initial wp-config.php content.  
+copy and create it in the web folder
+
+
 /* -------------------------------------------------- */
 <?php
 /**
