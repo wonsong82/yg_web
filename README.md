@@ -2,7 +2,7 @@ start from outside root which is parent of server
 
 cd yg
 
-yg> git clone https://boksil@bitbucket.org/ygpresents/web.git
+yg> git clone https://bitbucket.org/ygpresents/web.git
 
 this creates web folder and pulls source
 yg>cd web
