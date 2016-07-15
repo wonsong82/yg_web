@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 /**
  * ThemeGrill Starter functions and definitions.
