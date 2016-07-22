@@ -191,3 +191,25 @@ require get_template_directory() . '/inc/admin/meta-boxes.php';
 if ( is_admin() ) {
 	require get_template_directory() . '/inc/admin/class-estore-admin.php';
 }
+
+
+
+
+
+
+
+
+
+
+/** woocommerce action */
+//add_action( 'woocommerce_product_options_downloads', 'wc_rrp_product_field' );
+//
+//function wc_rrp_product_field() {
+//	woocommerce_wp_text_input(
+//		array( 'id' => 'rrp_price',
+//			'class' => 'wc_input_price short',
+//			'label' => __( 'RRP', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')' ) );
+//}
+
+
+
