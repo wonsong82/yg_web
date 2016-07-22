@@ -147,5 +147,3 @@ function option_form($option, $posts, $tag){?>
 
 
 
-
-
