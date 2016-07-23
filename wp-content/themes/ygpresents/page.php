@@ -14,12 +14,24 @@
  * @since eStore 0.1
  */
 
-get_header(); ?>
+//get_header(); ?>
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YG Presents</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/app.css">
+</head>
+<body>
+
+
 	<?php
 	do_action( 'estore_before_body_content' );
 
 	$estore_layout = estore_layout_class();
 	?>
+<div class="StaticPage">
 	<div id="content" class="site-content"><!-- #content.site-content -->
 		<div class="page-header clearfix">
 			<div class="tg-container">
@@ -51,5 +63,31 @@ get_header(); ?>
 	</div>
 
 	<?php do_action( 'estore_after_body_content' ); ?>
+</div>
 
-<?php get_footer(); ?>
+<div id="root">
+    <div class="page-loading">
+        <div class="page-loading__spinner">
+            <div class="Spinner">
+                <span class="tl box"></span>
+                <span class="tr box"></span>
+                <span class="bl box"></span>
+                <span class="br box"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="http://localhost:8080/app.js"></script>
+</body>
+</html>
+
+
+
+
+
+<?php //get_footer(); ?>
+
+
+
