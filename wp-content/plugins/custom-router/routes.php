@@ -31,8 +31,8 @@ return [
 
   // For any api calls. Template file receives class & method params via $wp_query->query
   [
-    'uri_pattern'   => '^api/(.+?)/(.+?)/?$',
-    'match_params'  => ['class', 'method'],
+    'uri_pattern'   => '^api/(.+?)/?$',
+    'match_params'  => ['method'],
     'page_post_id'  => 103,
   ],
 

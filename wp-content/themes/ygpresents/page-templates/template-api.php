@@ -30,6 +30,20 @@ dd('API');
 dd('<pre>', true);
 
 
+echo '<pre>';
+$requestedUri = $_SERVER['REQUEST_URI'];
+
+$method = substr(trim($requestedUri), 5);
+
+function getArtists(){
+  echo 'function';
+}
+
+if(function_exists($method))
+  $method();
+
+exit;
+
 
 // ############################################################################################################################  All Tours
 
@@ -151,6 +165,11 @@ $shop_data = getAllShops();
 //setResponseHeader(200);
 //header('Content-type: application/json');
 //echo json_encode($data);
+
+
+
+
+
 
 
 function getAllArtists(){
