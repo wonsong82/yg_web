@@ -8,7 +8,6 @@
  * @subpackage eStore
  * @since eStore 0.1
  */
-
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
