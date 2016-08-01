@@ -5,6 +5,9 @@
  */
 
 define('DEBUG', false);
+dd('API');
+dd('<pre>', true);
+
 
 $args = array(
 	'sort_order' => 'asc',
@@ -26,71 +29,23 @@ $args = array(
 
 $pages = get_pages($args); 
 
-dd('API');
-dd('<pre>', true);
-
-
-echo '<pre>';
 $requestedUri = $_SERVER['REQUEST_URI'];
-
 $method = substr(trim($requestedUri), 5);
 
-function getArtists(){
-  echo 'function';
+
+if(function_exists($method)){
+    $data = $method();
+
+    setResponseHeader(200);
+    header('Content-type: application/json');
+    echo json_encode($data);
+}else{
+
+    setResponseHeader(404);
+    echo json_encode(null);
+
 }
 
-if(function_exists($method))
-  $method();
-
-exit;
-
-
-// ############################################################################################################################  All Tours
-
-
-//foreach($posts as $post){
-//
-//	$fields = get_fields();
-//
-//	$tn_3x1 = $fields['thumbnail_image_3x1'];
-//	$tn_3x2 = $fields['thumbnail_image_3x2'];
-//	$tn = $fields['thumbnail_image'];
-//	$mainImage = $fields['main_image'];
-//
-//	$subtitle = $fields['subtitle'];
-//	$start_date = $fields['start_date'];
-//	$end_date = $fields['end_date'];
-//	$tour_url = $fields['tour_url'];
-//	$guest = $fields['guest'];
-//
-//
-//	$artist = $fields['artist'];
-//
-//	//array
-//	$tour_schedule = $fields['tour_schedule'];
-//
-//	var_dump($subtitle, $start_date , $end_date , $tour_url , $guest , $artist[0]->post_title);
-//}
-
-
-
-
-
-
-//global $woocommerce;
-//
-//$items = $woocommerce->cart->get_cart();
-//
-//echo '<pre>';
-//
-//foreach($items as $item){
-//    var_dump($item);
-//}
-
-echo '<pre>';
-
-
-$cart = getProductsInCart();
 
 function getProductsInCart(){
     global $woocommerce;
@@ -116,8 +71,6 @@ function getProductsInCart(){
     }
 }
 
-$cart_add = addProductsToCart();
-
 function addProductsToCart(){
 
     WC()->cart->add_to_cart(134, 1);
@@ -127,52 +80,7 @@ function addProductsToCart(){
 }
 
 
-
-
-
-$artist_data = getAllArtists();
-
-dd('<h2>' . 'Artists' . '</h2>', true);
-dd($artist_data);
-
-
-$tour_data = getAllTours();
-
-dd('<h2>' . 'Tours' . '</h2>', true);
-dd($tour_data);
-
-
-$event_data = getAllEvents();
-
-dd('<h2>' . 'Events' . '</h2>',true);
-dd($event_data);
-
-
-$album_data = getAllAlbums();
-
-dd('<h2>' . 'Albums' . '</h2>',true);
-dd($album_data);
-
-
-$blog_data = getAllBlog();
-
-
-
-
-
-$shop_data = getAllShops();
-
-//setResponseHeader(200);
-//header('Content-type: application/json');
-//echo json_encode($data);
-
-
-
-
-
-
-
-function getAllArtists(){
+function getArtists(){
     $artist_posts = get_posts([
         'post_type' => 'artist'
     ]);
@@ -199,7 +107,7 @@ function getAllArtists(){
     return $artist_data;
 }
 
-function getAllTours(){
+function getTours(){
 
 	$tour_posts = get_posts([
 		'post_type' => 'tour'
@@ -241,7 +149,7 @@ function getAllTours(){
 }
 
 
-function getAllEvents(){
+function getEvents(){
 
 	$event_posts = get_posts([
 		'post_type' => 'event'
@@ -252,10 +160,10 @@ function getAllEvents(){
 	foreach($event_posts as $key => $post){
 		$fields = get_fields($post->ID);
 
-		$tour_data[$key]['id'] = $post->ID;
-		$tour_data[$key]['post_title'] = $post->post_title;
-		$tour_data[$key]['post_content'] = $post->post_content;
-		$tour_data[$key]['post_date'] = $post->post_date;
+        $event_data[$key]['id'] = $post->ID;
+        $event_data[$key]['post_title'] = $post->post_title;
+        $event_data[$key]['post_content'] = $post->post_content;
+        $event_data[$key]['post_date'] = $post->post_date;
 
 		$event_data[$key]['main_image'] = $fields['main_image'];
 		$event_data[$key]['thumbnail_2x2'] = $fields['thumbnail_2x2'];
@@ -271,7 +179,7 @@ function getAllEvents(){
 
 }
 
-function getAllAlbums(){
+function getAlbums(){
 
     $album_posts = get_posts([
         'post_type' => 'album'
@@ -298,9 +206,7 @@ function getAllAlbums(){
     return $album_data;
 }
 
-function getAllBlog(){
-
-    echo '<pre>';
+function getBlogs(){
 
     $blog_posts = get_posts([
         'post_type' => 'blog'
@@ -328,9 +234,7 @@ function getAllBlog(){
 
 
 
-function getAllShops(){
-
-    echo '<pre>';
+function getProducts(){
 
     $shop_posts = get_posts([
         'post_type' => 'product',
@@ -347,27 +251,50 @@ function getAllShops(){
     foreach($shop_posts as $key => $post){
 
         $fields = get_post_meta($post->ID);
+        $custom_fields = get_fields($post->ID);
+
+        $plan = wc_get_product($post->ID);
+
 
         $shop_data[$key]['id'] = $post->ID;
         $shop_data[$key]['post_title'] = $post->post_title;
         $shop_data[$key]['post_content'] = $post->post_content;
         $shop_data[$key]['post_date'] = $post->post_date;
+        $ship_date[$key]['product_type'] = $plan->product_type;
 
 
         /** Custom Field Not in WooCommerce */
 
-        $shop_data[$key]['thumbnail_1x1'] = $fields['thumbnail_1x1'][0];
-        $shop_data[$key]['thumbnail_1x2'] = $fields['thumbnail_1x2'][0];
-        $shop_data[$key]['thumbnail_2x1'] = $fields['thumbnail_2x1'][0];
-        $shop_data[$key]['thumbnail_2x2'] = $fields['thumbnail_2x2'][0];
-        $shop_data[$key]['artist_id'] = $fields['artist'][0];
+        $shop_data[$key]['thumbnail_1x1'] = $custom_fields['thumbnail_1x1'];
+        $shop_data[$key]['thumbnail_1x2'] = $custom_fields['thumbnail_1x2'];
+        $shop_data[$key]['thumbnail_2x1'] = $custom_fields['thumbnail_2x1'];
+        $shop_data[$key]['thumbnail_2x2'] = $custom_fields['thumbnail_2x2'];
+        $shop_data[$key]['artist_id'] = $custom_fields['artist'][0];
 
 
+        if($plan->product_type == 'variable'){
+            $variations = $plan->get_available_variations();
+            foreach($variations as $k => $variation){
+                $shop_data[$key]['variation'][$k]['variation_id'] = $variation['variation_id'];
+                $shop_data[$key]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
+                $shop_data[$key]['variation'][$k]['display_price'] = $variation['display_price'];
+                $shop_data[$key]['variation'][$k]['sku'] = $variation['sku'];
 
-        /** Custom Field Not in WooCommerce */
-        $shop_data[$key]['_regular_price'] = $fields['_regular_price'][0];
-        $shop_data[$key]['_sale_price'] = $fields['_sale_price'][0];
-        $shop_data[$key]['_sku'] = $fields['_sku'][0];
+                $attributes = $variation['attributes'];
+
+                $att_index = 0;
+                foreach($attributes as $att_key => $attribute){
+                    $shop_data[$key]['variation'][$k]['attribute'][$att_index]['key'] = $att_key;
+                    $shop_data[$key]['variation'][$k]['attribute'][$att_index]['value'] = $attribute;
+                    $att_index++;
+                }
+            }
+
+        }else{
+            $shop_data[$key]['_regular_price'] = $fields['_regular_price'][0];
+            $shop_data[$key]['_sale_price'] = $fields['_sale_price'][0];
+            $shop_data[$key]['_sku'] = $fields['_sku'][0];
+        }
 
     }
 
@@ -375,11 +302,118 @@ function getAllShops(){
 
 }
 
-function getAllMusic(){
+function getMusics(){
+
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    $music_data = array();
+
+    foreach($music_posts as $key => $post){
+
+        $fields = get_post_meta($post->ID);
+        $custom_fields = get_fields($post->ID);
+
+        $music_data[$key]['id'] = $post->ID;
+        $music_data[$key]['post_title'] = $post->post_title;
+        $music_data[$key]['post_content'] = $post->post_content;
+        $music_data[$key]['post_date'] = $post->post_date;
+
+
+        $music_data[$key]['_regular_price'] = $fields['_regular_price'][0];
+        $music_data[$key]['_sale_price'] = $fields['_sale_price'][0];
+
+
+        //@todo sale schedule 에 따른 sale price 관리
+        $date_from = (int)$fields['_sale_price_dates_from'][0];
+        $date_to = (int)$fields['_sale_price_dates_to'][0];
+        $now = strtotime( 'NOW', current_time( 'timestamp' ));
+
+
+        $music_data[$key]['album_id'] = $custom_fields['album'][0];
+        $music_data[$key]['sample_link'] = $custom_fields['sample_link'];
+        $music_data[$key]['youtube_link'] = $custom_fields['youtube_link'];
+        $music_data[$key]['music_product_type'] = $custom_fields['music_product_type'];
+
+    }
+
+    return $music_data;
 
 }
 
+function getCategories(){
+    $categories =  get_categories([
+        'taxonomy'     => 'product_cat',
+        'orderby'      => 'id',
+        'show_count'   => 0,
+        'pad_counts'   => 0,
+        'hierarchical' => 1,
+        'title_li'     => '',
+        'hide_empty'   => 0
+    ]);
 
+    $categories_data = array();
+
+    foreach($categories as $key => $category){
+        $categories_data[$key]['cat_ID'] = $category->cat_ID;
+        $categories_data[$key]['name'] = $category->name;
+    }
+
+    return $categories_data;
+}
+
+
+function getPromotions(){
+
+    $promotions = get_option('main_contents');
+
+    $promotions_data = array();
+    $index = 0;
+
+    foreach($promotions as $key => $value){
+        $promotions_data[$index]['id'] = $key;
+        $promotions_data[$index]['post_type'] = $value;
+
+        $index++;
+    }
+
+    return $promotions_data;
+}
+
+function getHotTracks(){
+    $hot_tracks = get_option('hot_track');
+
+    $hot_track_data = array();
+    $index = 0;
+
+    foreach($hot_tracks as $key => $value){
+        $hot_track_data[$index]['id'] = $key;
+        $index++;
+    }
+
+    return $hot_track_data;
+}
+
+function getHotBlogs(){
+    $hot_blogs = get_option('hot_blog');
+
+    $hot_blog_data = array();
+    $index = 0;
+
+    foreach($hot_blogs as $key => $value){
+        $hot_blog_data[$index]['id'] = $key;
+        $index++;
+    }
+
+    return $hot_blog_data;
+}
 
 
 // ############################################################################################################################ All Physical Goods
@@ -539,13 +573,6 @@ function dd($dumpData, $echo = false){
 	}
 }
 
-$data = [
-	'name' => 'Won Song',
-	'id' => 10
-];
-
-
-
 function setResponseHeader($code){
 	$code = (int)$code;
 	switch ($code) {
@@ -596,6 +623,4 @@ function setResponseHeader($code){
 	$GLOBALS['http_response_code'] = $code;
 }
 
-//setResponseHeader(200);
-//header('Content-type: application/json');
-//echo json_encode($data);
+

@@ -112,11 +112,28 @@ function option_form($option, $posts, $tag){?>
 
     <form method="post" action="options.php">
         <?php settings_fields( $tag ); ?>
+
         <table class="form-table">
             <tr valign="top">
                 <td scope="row" colspan="2">
                     <?php foreach($posts as $post){
 
+                        /**  
+                         * Main Promotion 일 경우,
+                         * Downloadable Music 은 해당 list 에 포함 시키 지 않는다.
+                         * Album Item 은 Album Post Type 에서 가져 온다.
+                         */
+
+                        if($tag == 'main_contents'){
+                            if($post->post_type == 'product'){
+                                $post_type_val = get_post_meta($post->ID, '_downloadable');
+
+                                if($post_type_val[0] == 'yes'){
+                                    continue;
+                                }
+                            }
+                        }
+                        
                         $title = $post->post_title;
                         $id = $post->ID;
                         $post_type = strtoupper($post->post_type);
@@ -124,7 +141,9 @@ function option_form($option, $posts, $tag){?>
 
                         <input name="<?php echo $tag ?>[<?php echo $id?>]" type="checkbox"
                             <?=isset($option[$id]) == '1' ? 'checked' : '' ?>
+                            value="<?= $post->post_type ?>"
                         />
+
                         <lable for=<?php echo $tag?>><?php echo $title . ' [' . $post_type . ']' ?></lable><br>
                     <?php } ?>
                 </td>
@@ -134,16 +153,3 @@ function option_form($option, $posts, $tag){?>
     </form>
     <?php
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
