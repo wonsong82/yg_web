@@ -51,7 +51,6 @@ function getProductsInCart(){
     global $woocommerce;
     $items = $woocommerce->cart->get_cart();
 
-
     $cart_data = array();
 
     foreach($items as $item => $values) {
@@ -64,16 +63,19 @@ function getProductsInCart(){
         $quantity = $values['quantity'];
         $line_total = $values['line_subtotal'];
 
-
         $is_music = get_post_meta($product_id , '_downloadable', true);
-
 
     }
 }
 
-function addProductsToCart(){
+function addProductsToCart($data){
 
-    WC()->cart->add_to_cart(134, 1);
+    $product_id = $data['product_id'];
+    $variation_id = isset($data['variation_id']) ? $data['variation_id'] : 0;
+    $qty = $data['qty'];
+
+
+    WC()->cart->add_to_cart($product_id, $qty , $variation_id);
 
     //After Add Items to Cart, Front needs updates cart information.
     return getProductsInCart();
@@ -256,12 +258,22 @@ function getProducts(){
         $plan = wc_get_product($post->ID);
 
 
+
+        $terms = get_the_terms($post->ID, 'product_cat');
+
+        $terms_data = array();
+        foreach($terms as $term_key => $term_value){
+            $terms_data[$term_key] = $term_value->term_id;
+        }
+
+
+
         $shop_data[$key]['id'] = $post->ID;
         $shop_data[$key]['post_title'] = $post->post_title;
         $shop_data[$key]['post_content'] = $post->post_content;
         $shop_data[$key]['post_date'] = $post->post_date;
-        $ship_date[$key]['product_type'] = $plan->product_type;
-
+        $shop_data[$key]['product_type'] = $plan->product_type;
+        $shop_data[$key]['cat_IDs'] = $terms_data;
 
         /** Custom Field Not in WooCommerce */
 
@@ -274,11 +286,22 @@ function getProducts(){
 
         if($plan->product_type == 'variable'){
             $variations = $plan->get_available_variations();
+            $default = $plan->get_variation_default_attributes();
+
+            $default_att = array();
+            foreach($default as $key_att => $item){
+                $default_att['attribute_'.$key_att] = $item;
+            }
+
+            $shop_data[$key]['default_att'] = $default_att;
+
             foreach($variations as $k => $variation){
                 $shop_data[$key]['variation'][$k]['variation_id'] = $variation['variation_id'];
                 $shop_data[$key]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
                 $shop_data[$key]['variation'][$k]['display_price'] = $variation['display_price'];
                 $shop_data[$key]['variation'][$k]['sku'] = $variation['sku'];
+
+
 
                 $attributes = $variation['attributes'];
 
@@ -289,7 +312,6 @@ function getProducts(){
                     $att_index++;
                 }
             }
-
         }else{
             $shop_data[$key]['_regular_price'] = $fields['_regular_price'][0];
             $shop_data[$key]['_sale_price'] = $fields['_sale_price'][0];

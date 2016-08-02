@@ -36,10 +36,10 @@ function yg_admin_init() {
 function yg_admin_menu() {
 
     // Add a new top-level menu (Promotional Contents Manager):
-    add_menu_page('Promotion', 'Promotion', 'administrator', 'contents-manager', 'contents_manager' );
+    add_menu_page('Promotion', 'Promotion', 'administrator', 'contents-manager', 'get_main_contents' );
 
     // Add a submenu to the Promotional Contents Manager Menu
-    add_submenu_page('contents-manager', 'Main Contents', 'Main Contents', 'administrator', 'main-contents', 'get_main_contents');
+//    add_submenu_page('contents-manager', 'Main Contents', 'Main Contents', 'administrator', 'main-contents', 'get_main_contents');
     add_submenu_page('contents-manager', 'Hot Track', 'Hot Track', 'administrator', 'hot-track', 'get_hot_track');
     add_submenu_page('contents-manager', 'Hot Blog', 'Hot Blog', 'administrator', 'hot-blog', 'get_hot_blog');
 
