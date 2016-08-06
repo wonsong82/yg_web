@@ -258,7 +258,6 @@ function getProducts(){
         $plan = wc_get_product($post->ID);
 
 
-
         $terms = get_the_terms($post->ID, 'product_cat');
 
         $terms_data = array();
@@ -370,7 +369,7 @@ function getMusics(){
 
 }
 
-function getCategories(){
+function getProductCategories(){
     $categories =  get_categories([
         'taxonomy'     => 'product_cat',
         'orderby'      => 'id',
