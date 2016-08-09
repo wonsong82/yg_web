@@ -250,7 +250,7 @@ class WC_Post_types {
 							'not_found'             => __( 'No Products found', 'woocommerce' ),
 							'not_found_in_trash'    => __( 'No Products found in trash', 'woocommerce' ),
 							'parent'                => __( 'Parent Product', 'woocommerce' ),
-							'featured_image'        => __( 'Product Image', 'woocommerce' ),
+							'featured_image'        => __( 'Product Image (648 x 648)', 'woocommerce' ),
 							'set_featured_image'    => __( 'Set product image', 'woocommerce' ),
 							'remove_featured_image' => __( 'Remove product image', 'woocommerce' ),
 							'use_featured_image'    => __( 'Use as product image', 'woocommerce' ),

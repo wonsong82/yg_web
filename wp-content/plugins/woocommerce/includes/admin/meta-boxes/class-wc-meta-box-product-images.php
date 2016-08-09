@@ -28,6 +28,7 @@ class WC_Meta_Box_Product_Images {
 		?>
 		<div id="product_images_container">
 			<ul class="product_images">
+				<p>Upload 648 x 648 images</p>
 				<?php
 					if ( metadata_exists( 'post', $post->ID, '_product_image_gallery' ) ) {
 						$product_image_gallery = get_post_meta( $post->ID, '_product_image_gallery', true );

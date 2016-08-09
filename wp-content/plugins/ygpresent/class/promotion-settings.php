@@ -58,12 +58,12 @@ class PromotionSettings
     function add_plugin_page() {
 
         // Add a new top-level menu (Promotional Contents Manager):
-        add_menu_page('Promotion', 'Promotion', 'administrator', 'contents-manager', array($this, 'get_main_contents'));
+        add_menu_page('Promotion', 'Promotion', 'edit_users', 'contents-manager', array($this, 'get_main_contents'));
 
 
         // Add a sub-menu to the Promotional Contents Manager Menu
-        add_submenu_page('contents-manager', 'Hot Track', 'Hot Track', 'administrator', 'hot-track', array($this, 'get_hot_track'));
-        add_submenu_page('contents-manager', 'Hot Blog', 'Hot Blog', 'administrator', 'hot-blog', array($this, 'get_hot_blog'));
+        add_submenu_page('contents-manager', 'Hot Track', 'Hot Track', 'edit_users', 'hot-track', array($this, 'get_hot_track'));
+        add_submenu_page('contents-manager', 'Hot Blog', 'Hot Blog', 'edit_users', 'hot-blog', array($this, 'get_hot_blog'));
 
     }
 
@@ -146,6 +146,7 @@ class PromotionSettings
         ]);
 
         $this->setting_form($this->hot_track.'-group', $this->hot_track.'_enable' , $this->hot_track.'_order', $posts);
+
     }
 
     function get_hot_blog(){
@@ -162,8 +163,14 @@ class PromotionSettings
         $this->setting_form($this->hot_blog.'-group', $this->hot_blog.'_enable' , $this->hot_blog.'_order', $posts);
     }
 
+    function no_post_message($ret){
+
+    }
 
     function setting_form($option_group, $enable, $order, $posts){
+
+        if(count($posts) == 0 ) return false;
+
         $enable_val = get_option($enable);
         $order_val = get_option($order);
         ?>
