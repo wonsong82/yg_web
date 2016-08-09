@@ -7,4 +7,5 @@ Author: Zeter Lee
 Description: YG Present
  */
 
-require_once( $plugin_dir_path . 'class/promotion-settings.php' );
+
+require_once('class/promotion-settings.php' );
