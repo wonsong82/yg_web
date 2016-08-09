@@ -97,7 +97,8 @@ $wp_cats = array();
 	 
 	function wpc_add_admin() {
 	global $themename, $shortname ,$wpcInstance;
-	if ( $_GET['page'] =='wpc-management' && isset($_REQUEST['action']) ) {
+
+	if ( isset($_GET['page']) && $_GET['page'] =='wpc-management' && isset($_REQUEST['action']) ) {
 			if ( 'save' == $_REQUEST['action'] ) {
 			foreach ($_REQUEST as $key=>$value) {
 				if( isset( $_REQUEST[ $key ] ) ) { 

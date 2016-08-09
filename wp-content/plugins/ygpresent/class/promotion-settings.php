@@ -81,7 +81,7 @@ class PromotionSettings
     public function enqueue_admin_styles(){
         $src = plugins_url( 'assets/css/table.css', __FILE__ );
 
-        wp_enqueue_style( $this->plugin_slug .'-table', $src , array(), self::VERSION );
+        wp_enqueue_style( $this->slug .'-table', $src , array(), self::VERSION );
     }
 
     public function enqueue_admin_scripts(){
