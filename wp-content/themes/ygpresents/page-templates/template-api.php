@@ -4,9 +4,9 @@
  *
  */
 
-define('DEBUG', false);
-dd('API');
-dd('<pre>', true);
+//define('DEBUG', true);
+//dd('API');
+//dd('<pre>', true);
 
 
 $args = array(
