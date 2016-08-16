@@ -26,10 +26,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 <form method="post" class="lost_reset_password">
 
 	<?php if( 'lost_password' === $args['form'] ) : ?>
+		<div class="static-content-title">Password</div>
+		<p><?php echo apply_filters( 'woocommerce_lost_password_message', __( 'Lost your password?', 'woocommerce' ) ); ?></p>
+		<span><?php echo apply_filters( 'woocommerce_lost_password_message', __( 'Please enter your username or email address. You will receive a link to create a new password via email.', 'woocommerce' ) ); ?></span>
 
-		<p><?php echo apply_filters( 'woocommerce_lost_password_message', __( 'Lost your password? Please enter your username or email address. You will receive a link to create a new password via email.', 'woocommerce' ) ); ?></p>
-
-		<p class="form-row form-row-first"><label for="user_login"><?php _e( 'Username or email', 'woocommerce' ); ?></label> <input class="input-text" type="text" name="user_login" id="user_login" /></p>
+		<p class="form-row form-row-first"><label for="user_login"><?php _e( 'Username or email', 'woocommerce' ); ?></label></p>
+		<p><input class="input-text" type="text" name="user_login" id="user_login" /></p>
 
 	<?php else : ?>
 
@@ -55,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<p class="form-row">
 		<input type="hidden" name="wc_reset_password" value="true" />
-		<input type="submit" class="button" value="<?php echo 'lost_password' === $args['form'] ? __( 'Reset Password', 'woocommerce' ) : __( 'Save', 'woocommerce' ); ?>" />
+		<input type="submit" class="button yg-button-black" value="<?php echo 'lost_password' === $args['form'] ? __( 'Reset Password', 'woocommerce' ) : __( 'Save', 'woocommerce' ); ?>" />
 	</p>
 
 	<?php wp_nonce_field( $args['form'] ); ?>
