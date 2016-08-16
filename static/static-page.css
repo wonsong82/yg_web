@@ -1,0 +1,134 @@
+.StaticPage {
+    display: none;
+}
+
+
+.static-content-wrapper{
+    max-width:1000px;
+    margin:auto;
+}
+
+.static-content-title{
+    font-size: larger;
+    font-weight: bold;
+    padding-bottom:10px;
+    margin-bottom:10px;
+    border-bottom:solid;
+    border-bottom-width:1px;
+    border-bottom-color:darkgrey;
+    width:100%;
+    clear:both;
+}
+
+.static-content-h2{
+    font-size: large;
+    font-weight: bold;
+    margin:20px 0px 20px 0px;
+
+}
+
+body > div.StaticPage > article > div > p{
+    margin: 0px 0px 20px 0px;
+}
+
+.yg-button-black{
+    width:200px;
+    text-align:center;
+    background-color:black;
+    color:white;
+    margin:auto;
+    display:block;
+}
+
+
+/* contact form page */
+.static-form-office-hour, .contact-form-address{
+    float:left;
+    width:45%;
+}
+
+.wpcf7{
+    clear:both;
+}
+
+
+/* login form */
+div#customer_login{
+    max-width:300px;
+    margin:auto;
+}
+
+div#customer_login .col-1{
+    float:left;
+    min-width:200px;
+    margin-right:20px;
+}
+
+div#customer_login .col-2{
+    float:left;
+    min-width:200px;
+}
+
+div#customer_login .input-text{
+    width:200px;
+}
+
+.lost_reset_password{
+    width:200px;
+    margin:auto;
+}
+
+.lost_reset_password span {
+    font-size:smaller;
+}
+
+.lost_reset_password .input-text{
+    width:98%;
+}
+
+
+/* myaccount profile */
+.edit-account{
+    max-width:400px;
+    margin:auto;
+    float:left;
+}
+
+.profile-menu{
+    float:left;
+    width:200px;
+}
+#profile-form{
+    width:800px;
+    margin:auto;
+}
+
+/* static address page */
+#static-address-edit{
+    width:400px;
+}
+
+#static-address-edit form .form-row label {
+    width:100%;
+    float:left;
+}
+
+#static-address-edit form .form-row {
+    /*width:100%;*/
+    float:left;
+}
+
+#billing_first_name_field, #billing_last_name_field, #billing_email_field,
+#shipping_first_name_field, #shipping_last_name_field, #shipping_email_field
+{
+    width:45%;
+}
+
+#billing_address_2_field, #shipping_address_2{
+    margin-top:18px;
+}
+
+#static-address-edit .col-1, #static-address-edit .col-2{
+    float: left;
+    width: 50%;
+}
