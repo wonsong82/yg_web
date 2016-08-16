@@ -273,7 +273,7 @@ function getMusics(){
     $index = 0;
 
     foreach($hot_tracks as $key => $value){
-        $album_data['hot_tracks'][$index] = $key;
+        $album_data['hotTracks'][$index] = $key;
         $index++;
     }
 
