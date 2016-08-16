@@ -322,7 +322,7 @@ function getBlogs(){
 }
 
 
-
+// 2th DONE -------------- 8/15/2016
 function getShops(){
 
     $shop_posts = get_posts([
@@ -424,11 +424,7 @@ function getShops(){
 
     }
 
-    return $shop_data;
 
-}
-
-function getProductCategories(){
     $categories =  get_categories([
         'taxonomy'     => 'product_cat',
         'orderby'      => 'id',
@@ -439,16 +435,15 @@ function getProductCategories(){
         'hide_empty'   => 0
     ]);
 
-    $categories_data = array();
-
     foreach($categories as $key => $category){
-        $categories_data[$key]['cat_ID'] = $category->cat_ID;
-        $categories_data[$key]['name'] = $category->name;
+        $shop_data['categories'][$category->cat_ID]['cat_ID'] = $category->cat_ID;
+        $shop_data['categories'][$category->cat_ID]['name'] = $category->name;
     }
 
-    return $categories_data;
-}
 
+    return $shop_data;
+
+}
 
 function getPromotions(){
 
@@ -479,156 +474,6 @@ function getFriendlyUrl($type, $post){
     $permalink = get_permalink($post);
     return str_replace($type, '', parse_url($permalink)['path']);
 }
-
-
-// ############################################################################################################################ All Physical Goods
-
-//$shop_query = array(
-//	'post_type'		=> 'product',
-//	'meta_query'		=> array(
-//		array(
-//			'key' => '_downloadable',
-//			'value' => 'no'
-//		)
-//	)
-//);
-//
-//$shop_posts = get_posts($shop_query);
-//
-//foreach($shop_posts as $post){
-//
-//	echo '<h3>' . 'CURRENT SHOP POST' . '</h3>';
-//	var_dump($post);
-//
-//	$fields = get_fields($post->ID);
-//
-//	echo '<h3>' . 'FIELDS OF CURRENT SHOP POST' . '</h3>';
-//	var_dump($fields);
-//}
-
-
-
-// ############################################################################################################################ Artist Page
-
-//$artist_id = 129;
-//
-//$artist = get_post($artist_id);
-//
-//echo '<h3>' . 'current ARTIST' . '</h3>';
-//var_dump($artist);
-//
-//$artist_fields = get_fields($artist_id);
-//echo '<h3>' . 'current ARTIST fields' . '</h3>';
-//var_dump($artist_fields);
-//
-//
-///**  ############################ TOUR QUERY ########################### */
-//
-//$tour_query = array(
-//	'post_type'		=> 'tour',
-//	'meta_query'		=> array(
-//		array(
-//			'key' => 'artist',
-//			'value' => '"' . $artist_id . '"',
-//			'compare' => 'LIKE'
-//		)
-//	)
-//);
-//
-//$tour_posts = get_posts($tour_query);
-//
-//echo '<h3>' . 'All Tour Posts related to current ARTIST' . '</h3>';
-//var_dump($tour_posts);
-//
-//foreach($tour_posts as $tour_post){
-//
-//	$tour_fields = get_fields($tour_post->ID);
-//
-//	echo '<h3>' . 'All Fields related to current TOUR' . '</h3>';
-//	var_dump($tour_fields);
-//}
-//
-//
-///**  ############################ EVENT QUERY ########################### */
-//
-//$event_query = array(
-//	'post_type'		=> 'event',
-//	'meta_query'		=> array(
-//		array(
-//			'key' => 'artist',
-//			'value' => '"' . $artist_id . '"',
-//			'compare' => 'LIKE'
-//		)
-//	)
-//);
-//
-//echo '<h3>' . 'All EVENT Posts related to current ARTIST' . '</h3>';
-//$event_posts = get_posts($event_query);
-//var_dump($event_posts);
-//
-//foreach($event_posts as $event_post){
-//	$event_fields = get_fields($event_post->ID);
-//
-//	echo '<h3>' . 'All Fields related to current EVENT' . '</h3>';
-//	var_dump($event_fields);
-//}
-//
-//
-//
-///**  ############################ ALBUM QUERY ########################### */
-//
-//$album_query = array(
-//	'post_type'		=> 'album',
-//	'meta_query'		=> array(
-//		array(
-//			'key' => 'artist',
-//			'value' => '"' . $artist_id . '"',
-//			'compare' => 'LIKE'
-//		)
-//	)
-//);
-//
-//echo '<h3>' . 'All ALBUM Posts related to current ARTIST' . '</h3>';
-//$album_posts = get_posts($album_query);
-//var_dump($album_posts);
-//
-//foreach($album_posts as $album_post){
-//	$album_fields = get_fields($album_post->ID);
-//
-//	echo '<h3>' . 'All Fields related to current Album' . '</h3>';
-//	var_dump($album_fields);
-//
-//	/**  ############################ SONG QUERY that belongs to current Album ########################### */
-//
-//	$music_query = array(
-//		'post_type'		=> 'product',
-//		'meta_query'		=> array(
-//			array(
-//				'key' => 'album',
-//				'value' => '"' . $album_post->ID . '"',
-//				'compare' => 'LIKE'
-//			)
-//		)
-//	);
-//
-//	$music_posts = get_posts($music_query);
-//
-//	echo '<h3>' . 'All MUSIC related to current Album' . '</h3>';
-//
-//	var_dump($music_posts);
-//
-//	foreach($music_posts as $music_post){
-//
-//		$music_fields = get_fields($music_post->ID);
-//		echo '<h3>' . 'All MUSIC FIELDS related to current MUSIC(Product)' . '</h3>';
-//
-//		var_dump($music_fields);
-//	}
-//
-//}
-
-
-
 
 
 function dd($dumpData, $echo = false){
