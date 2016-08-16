@@ -21,13 +21,30 @@ $appJS = (defined('WP_DEBUG') && WP_DEBUG) ?
 
   <link rel="stylesheet" type="text/css" href="<?php echo $appCss?>">
 
+  <!--
+  Favicons:
+     for iOS - Add to homescreen for iPhone and iPad
+     for Android Chrome - Add to Homescreen for android
+     for Windows 8 & 10 - Can pin site on desktop
+     for Sarafi - Pinned Tab
+  -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="apple-mobile-web-app-title" content="YG Presents">
+  <meta name="application-name" content="YG Presents">
+  <meta name="theme-color" content="#ffffff">
+  <!-- End Favicons -->
+
 </head>
 <body>
 
 <div id="root">
   <div class="page-loading">
     <div class="page-loading__spinner">
-      <div class="Spinner">
+      <div class="SquareSpinner">
         <span class="tl box"></span>
         <span class="tr box"></span>
         <span class="bl box"></span>
