@@ -176,7 +176,6 @@ function getEvents(){
 	foreach($event_posts as $key => $post){
 		$fields = get_fields($post->ID);
 
-
         $event_data[$post->ID]['id'] = $post->ID;
         $event_data[$post->ID]['post_title'] = $post->post_title;
         $event_data[$post->ID]['post_content'] = $post->post_content;

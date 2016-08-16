@@ -1,4 +1,5 @@
 <?php
+
 $appCss = (defined('WP_DEBUG') && WP_DEBUG) ?
   'http://localhost:8080/app.css' :
   '/static/app.css';
@@ -6,6 +7,8 @@ $appCss = (defined('WP_DEBUG') && WP_DEBUG) ?
 $appJS = (defined('WP_DEBUG') && WP_DEBUG) ?
   'http://localhost:8080/app.js' :
   '/static/app.js';
+
+
 ?>
 <!doctype html>
 <html lang="en">
