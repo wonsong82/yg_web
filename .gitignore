@@ -33,6 +33,7 @@
 # ignore everything in the root except the "wp-content" directory.
 /*
 !wp-content/
+!static/
 
 # ignore all files starting with .
 .*
