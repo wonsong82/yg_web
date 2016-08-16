@@ -82,9 +82,13 @@ function addProductsToCart($data){
 }
 
 
+// 2th DONE -------------- 8/15/2016
 function getArtists(){
+
     $artist_posts = get_posts([
-        'post_type' => 'artist'
+        'post_type' => 'artist',
+        'post_status' => 'publish',
+        'posts_per_page' => -1
     ]);
 
     $artist_data = array();
@@ -92,27 +96,26 @@ function getArtists(){
     foreach($artist_posts as $key => $post){
         $fields = get_fields($post->ID);
 
-        $artist_data[$key]['id'] = $post->ID;
-        $artist_data[$key]['post_title'] = $post->post_title;
-        $artist_data[$key]['post_content'] = $post->post_content;
-        $artist_data[$key]['post_date'] = $post->post_date;
-
-        $artist_data[$key]['artist_name'] = $fields['artist_name'];
-        $artist_data[$key]['artist_image'] = $fields['artist_image'];
-        $artist_data[$key]['theme_color'] = $fields['theme_color'];
-        $artist_data[$key]['font_color'] = $fields['font_color'];
-
-        $artist_data[$key]['facebook_link'] = $fields['facebook_link'];
-        $artist_data[$key]['instagram_link'] = $fields['instagram_link'];
+        $artist_data[$post->ID]['id'] = $post->ID;
+        $artist_data[$post->ID]['name'] = $fields['artist_name'];
+        $artist_data[$post->ID]['urlFriendlyName'] = getFriendlyUrl('/artist/', $post);
+        $artist_data[$post->ID]['bg'] = $fields['artist_image'];
+        $artist_data[$post->ID]['themeColor'] = $fields['theme_color'];
+        $artist_data[$post->ID]['textColor'] = $fields['font_color'];
+        $artist_data[$post->ID]['facebook_link'] = $fields['facebook_link'];
+        $artist_data[$post->ID]['instagram_link'] = $fields['instagram_link'];
     }
 
     return $artist_data;
 }
 
+// 2th DONE -------------- 8/15/2016
 function getTours(){
 
 	$tour_posts = get_posts([
-		'post_type' => 'tour'
+		'post_type' => 'tour',
+        'post_status' => 'publish',
+        'posts_per_page' => -1
 	]);
 
 	$tour_data = array();
@@ -120,30 +123,38 @@ function getTours(){
 	foreach($tour_posts as $key => $post){
 		$fields = get_fields($post->ID);
 
-		$tour_data[$key]['id'] = $post->ID;
-		$tour_data[$key]['post_title'] = $post->post_title;
-		$tour_data[$key]['post_content'] = $post->post_content;
-		$tour_data[$key]['post_date'] = $post->post_date;
+        /** Tour Post Data */
+        $tour_data[$post->ID]['id'] = $post->ID;
+        $tour_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/tour/',$post);
+        $tour_data[$post->ID]['post_title'] = $post->post_title;
+        $tour_data[$post->ID]['post_content'] = $post->post_content;
+        $tour_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
 
 
-		/** Image Data */
-		$tour_data[$key]['main_image'] = $fields['main_image'];
-		$tour_data[$key]['thumbnail_image'] = $fields['thumbnail_image'];
-		$tour_data[$key]['thumbnail_image_3x1'] = $fields['thumbnail_image_3x1'];
-		$tour_data[$key]['thumbnail_image_3x2'] = $fields['thumbnail_image_3x2'];
+        /** Image Data */
+        $tour_data[$post->ID]['main_image'] = $fields['main_image'];
+        $tour_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
+        $tour_data[$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
+        $tour_data[$post->ID]['thumb_2x1'] = $fields['thumbnail_2x1'];
 
 
+        /** Tour Main Data */
+        $tour_data[$post->ID]['subtitle'] = $fields['subtitle'];
+        $tour_data[$post->ID]['start_date'] = convertDateFormat($fields['start_date']);
+        $tour_data[$post->ID]['end_date'] = convertDateFormat($fields['end_date']);
+        $tour_data[$post->ID]['tour_url'] = $fields['tour_url'];
+        $tour_data[$post->ID]['artist_id'] = $fields['artist'][0];
 
-		$tour_data[$key]['subtitle'] = $fields['subtitle'];
-		$tour_data[$key]['start_date'] = $fields['start_date'];
-		$tour_data[$key]['end_date'] = $fields['end_date'];
-		$tour_data[$key]['tour_url'] = $fields['tour_url'];
-		$tour_data[$key]['guest'] = $fields['guest'];
-		$tour_data[$key]['artist'] = $fields['artist'][0];
-
-		/** Tour Schedule - Array*/
-
-		$tour_data[$key]['tour_schedule'] = $fields['tour_schedule'];
+        /** Tour Schedule Data Array */
+        $index = 0;
+        foreach($fields['tour_schedule'] as $schedule){
+            $tour_data[$post->ID]['tour_schedule'][$index]['tour_date'] = convertDateFormat($schedule['tour_date']);
+            $tour_data[$post->ID]['tour_schedule'][$index]['location'] = $schedule['location'];
+            $tour_data[$post->ID]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
+            $tour_data[$post->ID]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
+            $tour_data[$post->ID]['tour_schedule'][$index]['ticket_availability'] = $schedule['ticket_availability'];
+            $index++;
+        }
 
 	}
 
@@ -151,10 +162,13 @@ function getTours(){
 }
 
 
+// 2th DONE -------------- 8/15/2016
 function getEvents(){
 
 	$event_posts = get_posts([
-		'post_type' => 'event'
+		'post_type' => 'event',
+        'post_status' => 'publish',
+        'posts_per_page' => -1
 	]);
 
 	$event_data = array();
@@ -162,18 +176,18 @@ function getEvents(){
 	foreach($event_posts as $key => $post){
 		$fields = get_fields($post->ID);
 
-        $event_data[$key]['id'] = $post->ID;
-        $event_data[$key]['post_title'] = $post->post_title;
-        $event_data[$key]['post_content'] = $post->post_content;
-        $event_data[$key]['post_date'] = $post->post_date;
 
-		$event_data[$key]['main_image'] = $fields['main_image'];
-		$event_data[$key]['thumbnail_2x2'] = $fields['thumbnail_2x2'];
-
-		$event_data[$key]['subtitle'] = $fields['subtitle'];
-		$event_data[$key]['short_description'] = $fields['short_description'];
-
-		$event_data[$key]['artist_id'] = $fields['artist'][0];
+        $event_data[$post->ID]['id'] = $post->ID;
+        $event_data[$post->ID]['post_title'] = $post->post_title;
+        $event_data[$post->ID]['post_content'] = $post->post_content;
+        $event_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
+        $event_data[$post->ID]['main_image'] = $fields['main_image'];
+        $event_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
+        $event_data[$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
+        $event_data[$post->ID]['excerpt'] = $fields['short_description'];
+        $event_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/event/', $post);
+        $event_data[$post->ID]['artist_id'] = $fields['artist'][0];
+        $event_data[$post->ID]['related_event'] = $fields['related_event'] ?: [];
 
 	}
 
@@ -181,37 +195,100 @@ function getEvents(){
 
 }
 
-function getAlbums(){
+
+// 2th DONE -------------- 8/15/2016
+function getMusics(){
+
+
+    /** ALBUM DATA */
 
     $album_posts = get_posts([
-        'post_type' => 'album'
+        'post_type' => 'album',
+        'post_status' => 'publish',
+        'posts_per_page' => -1
     ]);
 
     $album_data = array();
 
-    foreach($album_posts as $key => $post){
+    foreach($album_posts as $post){
 
         $fields = get_fields($post->ID);
 
-        $album_data[$key]['id'] = $post->ID;
-        $album_data[$key]['post_title'] = $post->post_title;
-        $album_data[$key]['post_content'] = $post->post_content;
-        $album_data[$key]['post_date'] = $post->post_date;
+        $album_data['albums'][$post->ID]['id'] = $post->ID;
+        $album_data['albums'][$post->ID]['post_title'] = $post->post_title;
+        $album_data['albums'][$post->ID]['post_content'] = $post->post_content;
+        $album_data['albums'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
+        $album_data['albums'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/album/',$post);
 
-        $album_data[$key]['subtitle'] = $fields['subtitle'];
-        $album_data[$key]['cover_image'] = $fields['cover_image'];
-        $album_data[$key]['album_url'] = $fields['album_url'];
-        $album_data[$key]['album_release_date'] = $fields['album_release_date'];
-        $album_data[$key]['artist_id'] = $fields['artist'][0];
+        $album_data['albums'][$post->ID]['thumb_1x1'] = $fields['thumbnail'];
+        $album_data['albums'][$post->ID]['cover_image'] = $fields['cover_image'];
+
+        $album_data['albums'][$post->ID]['album_url'] = $fields['album_url'];
+        $album_data['albums'][$post->ID]['album_release_date'] = convertDateFormat($fields['album_release_date']);
+
+        $album_data['albums'][$post->ID]['artist_id'] = $fields['artist'][0];
+        $album_data['albums'][$post->ID]['related_album'] = $fields['related_album'] ?: [];
+    }
+
+
+
+    /** MUSIC DATA */
+
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    foreach($music_posts as $music_post){
+
+        $music_fields = get_post_meta($music_post->ID);
+        $music_custom_fields = get_fields($music_post->ID);
+
+        $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
+        $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
+        $album_data['musics'][$music_post->ID]['post_content'] = $music_post->post_content;
+        $album_data['musics'][$music_post->ID]['post_date'] = convertDateFormat($music_post->post_date);
+
+
+        $album_data['musics'][$music_post->ID]['_regular_price'] = $music_fields['_regular_price'][0];
+        $album_data['musics'][$music_post->ID]['_sale_price'] = $music_fields['_sale_price'][0] ?: null;
+
+        $album_data['musics'][$music_post->ID]['album_id'] = $music_custom_fields['album'][0];
+        $album_data['musics'][$music_post->ID]['sample_link'] = $music_custom_fields['sample_link'];
+        $album_data['musics'][$music_post->ID]['youtube_link'] = $music_custom_fields['youtube_link'];
+        $album_data['musics'][$music_post->ID]['product_type'] = $music_custom_fields['music_product_type'];
+
+    }
+
+
+    /** HOT TRACK DATA */
+
+    $hot_tracks = get_option('sub_hot_track_enable');
+    $index = 0;
+
+    foreach($hot_tracks as $key => $value){
+        $album_data['hot_tracks'][$index] = $key;
+        $index++;
     }
 
     return $album_data;
 }
 
+
+// 2th DONE -------------- 8/15/2016
 function getBlogs(){
 
     $blog_posts = get_posts([
-        'post_type' => 'blog'
+        'post_type' => 'blog',
+        'post_status' => 'publish',
+        'posts_per_page' => -1
     ]);
 
     $blog_data = array();
@@ -220,15 +297,25 @@ function getBlogs(){
 
         $fields = get_fields($post->ID);
 
-        $blog_data[$key]['id'] = $post->ID;
-        $blog_data[$key]['post_title'] = $post->post_title;
-        $blog_data[$key]['post_content'] = $post->post_content;
-        $blog_data[$key]['post_date'] = $post->post_date;
+        $blog_data['posts'][$post->ID]['id'] = $post->ID;
+        $blog_data['posts'][$post->ID]['post_title'] = $post->post_title;
+        $blog_data['posts'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/blog/',$post);
+        $blog_data['posts'][$post->ID]['excerpt'] = $post->post_excerpt;
+        $blog_data['posts'][$post->ID]['post_content'] = $post->post_content;
+        $blog_data['posts'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
+        $blog_data['posts'][$post->ID]['related_blog'] = $fields['related_blog'] ?: [];
+        $blog_data['posts'][$post->ID]['main_image'] = $fields['main_image'];
+        $blog_data['posts'][$post->ID]['thumb_2x1'] = $fields['thumbnail_2x1'];
+        $blog_data['posts'][$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
+    }
 
 
-        $blog_data[$key]['related_blog'] = $fields['related_blog'];
-        $blog_data[$key]['main_image'] = $fields['main_image'];
+    $hot_blogs = get_option('sub_hot_blog_enable');
+    $index = 0;
 
+    foreach($hot_blogs as $key => $value){
+        $blog_data['hot_posts'][$index] = $key;
+        $index++;
     }
 
     return $blog_data;
@@ -236,10 +323,12 @@ function getBlogs(){
 
 
 
-function getProducts(){
+function getShops(){
 
     $shop_posts = get_posts([
         'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
         'meta_query' => array(
             array(
                 'key' => '_downloadable',
@@ -257,7 +346,6 @@ function getProducts(){
 
         $plan = wc_get_product($post->ID);
 
-
         $terms = get_the_terms($post->ID, 'product_cat');
 
         $terms_data = array();
@@ -266,21 +354,32 @@ function getProducts(){
         }
 
 
+        $shop_data['products'][$post->ID]['id'] = $post->ID;
+        $shop_data['products'][$post->ID]['post_title'] = $post->post_title;
+        $shop_data['products'][$post->ID]['post_content'] = $post->post_content;
+        $shop_data['products'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
+        $shop_data['products'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/product/', $post);
 
-        $shop_data[$key]['id'] = $post->ID;
-        $shop_data[$key]['post_title'] = $post->post_title;
-        $shop_data[$key]['post_content'] = $post->post_content;
-        $shop_data[$key]['post_date'] = $post->post_date;
-        $shop_data[$key]['product_type'] = $plan->product_type;
-        $shop_data[$key]['cat_IDs'] = $terms_data;
+        $shop_data['products'][$post->ID]['product_type'] = $plan->product_type;
+        $shop_data['products'][$post->ID]['cat_IDs'] = $terms_data;
+
+        $shop_data['products'][$post->ID]['thumb_1x1'] = $custom_fields['thumbnail_2x2'];
+        $shop_data['products'][$post->ID]['thumb_2x1'] = $custom_fields['thumbnail_2x1'];
+        $shop_data['products'][$post->ID]['thumb_1x2'] = $custom_fields['thumbnail_1x2'];
+
+        $images_ids = $plan->get_gallery_attachment_ids();
+
+        $index = 0;
+        foreach( $images_ids as $image_id){
+            $shop_data['products'][$post->ID]['image'][$index] = wp_get_attachment_url($image_id);
+            $index++;
+        }
+
 
         /** Custom Field Not in WooCommerce */
 
-        $shop_data[$key]['thumbnail_1x1'] = $custom_fields['thumbnail_1x1'];
-        $shop_data[$key]['thumbnail_1x2'] = $custom_fields['thumbnail_1x2'];
-        $shop_data[$key]['thumbnail_2x1'] = $custom_fields['thumbnail_2x1'];
-        $shop_data[$key]['thumbnail_2x2'] = $custom_fields['thumbnail_2x2'];
-        $shop_data[$key]['artist_id'] = $custom_fields['artist'][0];
+        $shop_data['products'][$post->ID]['artist_id'] = $custom_fields['artist'][0];
+        $shop_data['products'][$post->ID]['related'] = count($plan->get_cross_sells()) > 0 ? $plan->get_cross_sells() : [];
 
 
         if($plan->product_type == 'variable'){
@@ -292,80 +391,40 @@ function getProducts(){
                 $default_att['attribute_'.$key_att] = $item;
             }
 
-            $shop_data[$key]['default_att'] = $default_att;
-
             foreach($variations as $k => $variation){
-                $shop_data[$key]['variation'][$k]['variation_id'] = $variation['variation_id'];
-                $shop_data[$key]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
-                $shop_data[$key]['variation'][$k]['display_price'] = $variation['display_price'];
-                $shop_data[$key]['variation'][$k]['sku'] = $variation['sku'];
+                $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
+                $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
+                $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $variation['display_price'];
+                $shop_data['products'][$post->ID]['variation'][$k]['sku'] = $variation['sku'];
 
 
 
                 $attributes = $variation['attributes'];
 
                 $att_index = 0;
+                $is_default = true;
                 foreach($attributes as $att_key => $attribute){
-                    $shop_data[$key]['variation'][$k]['attribute'][$att_index]['key'] = $att_key;
-                    $shop_data[$key]['variation'][$k]['attribute'][$att_index]['value'] = $attribute;
+                    $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['key'] = $att_key;
+                    $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['value'] = $attribute;
+
+                    if($default_att[$att_key] != $attribute){
+                        $is_default = false;
+                    }
+
                     $att_index++;
                 }
+
+                $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
             }
         }else{
-            $shop_data[$key]['_regular_price'] = $fields['_regular_price'][0];
-            $shop_data[$key]['_sale_price'] = $fields['_sale_price'][0];
-            $shop_data[$key]['_sku'] = $fields['_sku'][0];
+            $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
+            $shop_data['products'][$post->ID]['_sale_price'] = $fields['_sale_price'][0];
+            $shop_data['products'][$post->ID]['_sku'] = $fields['_sku'][0];
         }
 
     }
 
     return $shop_data;
-
-}
-
-function getMusics(){
-
-    $music_posts = get_posts([
-        'post_type' => 'product',
-        'meta_query' => array(
-            array(
-                'key' => '_downloadable',
-                'value' => 'yes'
-            )
-        )
-    ]);
-
-    $music_data = array();
-
-    foreach($music_posts as $key => $post){
-
-        $fields = get_post_meta($post->ID);
-        $custom_fields = get_fields($post->ID);
-
-        $music_data[$key]['id'] = $post->ID;
-        $music_data[$key]['post_title'] = $post->post_title;
-        $music_data[$key]['post_content'] = $post->post_content;
-        $music_data[$key]['post_date'] = $post->post_date;
-
-
-        $music_data[$key]['_regular_price'] = $fields['_regular_price'][0];
-        $music_data[$key]['_sale_price'] = $fields['_sale_price'][0];
-
-
-        //@todo sale schedule 에 따른 sale price 관리
-        $date_from = (int)$fields['_sale_price_dates_from'][0];
-        $date_to = (int)$fields['_sale_price_dates_to'][0];
-        $now = strtotime( 'NOW', current_time( 'timestamp' ));
-
-
-        $music_data[$key]['album_id'] = $custom_fields['album'][0];
-        $music_data[$key]['sample_link'] = $custom_fields['sample_link'];
-        $music_data[$key]['youtube_link'] = $custom_fields['youtube_link'];
-        $music_data[$key]['music_product_type'] = $custom_fields['music_product_type'];
-
-    }
-
-    return $music_data;
 
 }
 
@@ -408,32 +467,17 @@ function getPromotions(){
     return $promotions_data;
 }
 
-function getHotTracks(){
-    $hot_tracks = get_option('hot_track');
 
-    $hot_track_data = array();
-    $index = 0;
+function convertDateFormat($date){
 
-    foreach($hot_tracks as $key => $value){
-        $hot_track_data[$index]['id'] = $key;
-        $index++;
-    }
+    return date("m/d/Y", strtotime($date));
 
-    return $hot_track_data;
 }
 
-function getHotBlogs(){
-    $hot_blogs = get_option('hot_blog');
+function getFriendlyUrl($type, $post){
 
-    $hot_blog_data = array();
-    $index = 0;
-
-    foreach($hot_blogs as $key => $value){
-        $hot_blog_data[$index]['id'] = $key;
-        $index++;
-    }
-
-    return $hot_blog_data;
+    $permalink = get_permalink($post);
+    return str_replace($type, '', parse_url($permalink)['path']);
 }
 
 
