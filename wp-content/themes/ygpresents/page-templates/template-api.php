@@ -139,16 +139,36 @@ function getTours(){
 
 
         /** Tour Main Data */
+
+        $date_start = convertDateFormat($fields['start_date']);
+        $date_end = convertDateFormat($fields['end_date']);
+
         $tour_data[$post->ID]['subtitle'] = $fields['subtitle'];
-        $tour_data[$post->ID]['start_date'] = convertDateFormat($fields['start_date']);
-        $tour_data[$post->ID]['end_date'] = convertDateFormat($fields['end_date']);
+        $tour_data[$post->ID]['start_date'] = $date_start;
+        $tour_data[$post->ID]['end_date'] = $date_end;
         $tour_data[$post->ID]['tour_url'] = $fields['tour_url'];
         $tour_data[$post->ID]['artist_id'] = $fields['artist'][0];
 
+
         /** Tour Schedule Data Array */
         $index = 0;
+        $tour_date_arr = [];
+
+        $begin = '';
+        $end = '';
+
         foreach($fields['tour_schedule'] as $schedule){
-            $tour_data[$post->ID]['tour_schedule'][$index]['tour_date'] = convertDateFormat($schedule['tour_date']);
+
+            $tour_date = convertDateFormat($schedule['tour_date']);
+            $tour_data[$post->ID]['tour_schedule'][$index]['tour_date'] = $tour_date;
+
+            if($index == 0) $begin = $tour_date;
+            else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_date;
+
+
+            $dtTour = new DateTime($tour_date);
+            $tour_date_arr[$index] = $dtTour->format('m/d');
+
             $tour_data[$post->ID]['tour_schedule'][$index]['location'] = $schedule['location'];
             $tour_data[$post->ID]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
             $tour_data[$post->ID]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
@@ -156,6 +176,29 @@ function getTours(){
             $index++;
         }
 
+
+
+        $begin = new DateTime(date("Y-m-d", strtotime('last sunday', strtotime($begin))));
+        $end = new DateTime(date("Y-m-d", strtotime('saturday this week', strtotime($end))));
+        $end = $end->modify( '+1 day' );
+
+        $interval = new DateInterval('P1D');
+        $date_range = new DatePeriod($begin, $interval ,$end);
+
+
+        $tour_calendar = [];
+
+        foreach($date_range as $date){
+            $tour_calendar[$date->format('m/d')] = false;
+        }
+
+
+        foreach($tour_date_arr as $item){
+            $tour_calendar[$item] = true;
+        }
+
+
+        $tour_data[$post->ID]['tour_calendar'] = $tour_calendar;
 	}
 
 	return $tour_data;
@@ -272,11 +315,14 @@ function getMusics(){
     $hot_tracks = get_option('sub_hot_track_enable');
     $index = 0;
 
-    foreach($hot_tracks as $key => $value){
-        $album_data['hotTracks'][$index] = $key;
-        $index++;
+    if(count($hot_tracks) > 0 && $hot_tracks != null){
+        foreach($hot_tracks as $key => $value){
+            $album_data['hotTracks'][$index] = $key;
+            $index++;
+        }
+    }else{
+        $album_data['hotTracks'] = [];
     }
-
     return $album_data;
 }
 
@@ -312,10 +358,15 @@ function getBlogs(){
     $hot_blogs = get_option('sub_hot_blog_enable');
     $index = 0;
 
-    foreach($hot_blogs as $key => $value){
-        $blog_data['hot_posts'][$index] = $key;
-        $index++;
+    if(count($hot_blogs) > 0 && $hot_blogs != null){
+        foreach($hot_blogs as $key => $value){
+            $blog_data['hot_posts'][$index] = $key;
+            $index++;
+        }
+    }else{
+        $blog_data['hot_posts'] = [];
     }
+
 
     return $blog_data;
 }
@@ -434,11 +485,14 @@ function getShops(){
         'hide_empty'   => 0
     ]);
 
-    foreach($categories as $key => $category){
-        $shop_data['categories'][$category->cat_ID]['cat_ID'] = $category->cat_ID;
-        $shop_data['categories'][$category->cat_ID]['name'] = $category->name;
+    if(count($categories) > 0 && $categories != null){
+        foreach($categories as $key => $category){
+            $shop_data['categories'][$category->cat_ID]['cat_ID'] = $category->cat_ID;
+            $shop_data['categories'][$category->cat_ID]['name'] = $category->name;
+        }
+    }else{
+        $shop_data['categories'] = [];
     }
-
 
     return $shop_data;
 

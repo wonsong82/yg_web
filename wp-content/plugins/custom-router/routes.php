@@ -38,35 +38,78 @@ return [
 
   // For regular SPA routes
   [
+    'uri_pattern'   => '^(promotion)/(shop|music|tour|event|blog)/(.+)/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
+  [
     'uri_pattern'   => '^(blog)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
   ],
+  [
+    'uri_pattern'   => '^(blog)/(.+)?/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
   [
     'uri_pattern'   => '^(event)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
   ],
   [
+    'uri_pattern'   => '^(event)/(.+)?/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
+  [
     'uri_pattern'   => '^(tour)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
   ],
+  [
+    'uri_pattern'   => '^(tour)/(.+)?/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
   [
     'uri_pattern'   => '^(shop)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
   ],
   [
+    'uri_pattern'   => '^(shop)/?(.+)?/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
+  [
     'uri_pattern'   => '^(music)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
   ],
   [
-    'uri_pattern'   => '^(artist)/(.+?)/?$',
+    'uri_pattern'   => '^(music)/?(.+)?/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
+
+  [
+    'uri_pattern'   => '^(artist)/?$',
+    'match_params'  => ['page', 'artist_name'],
+    'page_post_id'  => 101
+  ],
+  [
+    'uri_pattern'   => '^(artist)/?(.+)?/?$',
     'match_params'  => ['page', 'artist_name'],
     'page_post_id'  => 101
   ]
+
 ];
 
 
