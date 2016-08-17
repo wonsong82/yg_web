@@ -19,9 +19,9 @@ $staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>YG Presents</title>
 
+  <link rel="stylesheet" type="text/css" href="<?php echo $appCss?>">
   <?php echo $staticCss ?>
   <?php echo $staticPageCss ?>
-  <link rel="stylesheet" type="text/css" href="<?php echo $appCss?>">
 
   <!--
   Favicons:
