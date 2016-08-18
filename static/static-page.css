@@ -4,18 +4,19 @@
 
 
 .static-content-wrapper{
+    padding-top:80px;
     max-width:1000px;
+    width:684px;
     margin:auto;
 }
 
 .static-content-title{
     font-size: larger;
     font-weight: bold;
-    padding-bottom:10px;
-    margin-bottom:10px;
+    padding-bottom:20px;
     border-bottom:solid;
     border-bottom-width:1px;
-    border-bottom-color:darkgrey;
+    border-bottom-color:#BBBBBB;
     width:100%;
     clear:both;
 }
@@ -23,8 +24,11 @@
 .static-content-h2{
     font-size: large;
     font-weight: bold;
-    margin:20px 0px 20px 0px;
-
+    margin:60px 0px 23px 0px;
+    padding-bottom: 10px;
+    border-bottom: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #BBBBBB;
 }
 
 body > div.StaticPage > article > div > p{
