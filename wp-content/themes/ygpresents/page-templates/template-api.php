@@ -176,8 +176,6 @@ function getTours(){
             $index++;
         }
 
-
-
         $begin = new DateTime(date("Y-m-d", strtotime('last sunday', strtotime($begin))));
         $end = new DateTime(date("Y-m-d", strtotime('saturday this week', strtotime($end))));
         $end = $end->modify( '+1 day' );
@@ -191,7 +189,6 @@ function getTours(){
         foreach($date_range as $date){
             $tour_calendar[$date->format('m/d')] = false;
         }
-
 
         foreach($tour_date_arr as $item){
             $tour_calendar[$item] = true;
@@ -433,43 +430,57 @@ function getShops(){
 
 
         if($plan->product_type == 'variable'){
-            $variations = $plan->get_available_variations();
-            $default = $plan->get_variation_default_attributes();
 
-            $default_att = array();
-            foreach($default as $key_att => $item){
-                $default_att['attribute_'.$key_att] = $item;
+          //Get All Attributes this product used along with sort ordering
+          $all_attributes = $plan->get_attributes();
+
+          $att_temp = array();
+          foreach($all_attributes as $attr){
+            $att_temp['attribute_'.$attr['name']] = explode(",", $plan->get_attribute($attr['name']));
+          }
+
+          $shop_data['products'][$post->ID]['attributes'] = $att_temp;
+
+          $variations = $plan->get_available_variations();
+          $default = $plan->get_variation_default_attributes();
+
+
+          $default_att = array();
+          foreach($default as $key_att => $item){
+            $default_att['attribute_'.$key_att] = $item;
+          }
+
+          foreach($variations as $k => $variation){
+            $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
+            $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
+            $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $variation['display_price'];
+            $shop_data['products'][$post->ID]['variation'][$k]['sku'] = $variation['sku'];
+
+
+            $attributes = $variation['attributes'];
+
+
+            $att_index = 0;
+            $is_default = true;
+            foreach($attributes as $att_key => $attribute){
+              $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['key'] = $att_key;
+              $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['value'] = $attribute;
+
+              if(!isset($default_att[$att_key])){
+                $is_default = false;
+              } else if($default_att[$att_key] != $attribute){
+                $is_default = false;
+              }
+
+              $att_index++;
             }
 
-            foreach($variations as $k => $variation){
-                $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
-                $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
-                $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $variation['display_price'];
-                $shop_data['products'][$post->ID]['variation'][$k]['sku'] = $variation['sku'];
-
-
-
-                $attributes = $variation['attributes'];
-
-                $att_index = 0;
-                $is_default = true;
-                foreach($attributes as $att_key => $attribute){
-                    $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['key'] = $att_key;
-                    $shop_data['products'][$post->ID]['variation'][$k]['attribute'][$att_index]['value'] = $attribute;
-
-                    if($default_att[$att_key] != $attribute){
-                        $is_default = false;
-                    }
-
-                    $att_index++;
-                }
-
-                $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
-            }
+            $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
+          }
         }else{
-            $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
-            $shop_data['products'][$post->ID]['_sale_price'] = $fields['_sale_price'][0];
-            $shop_data['products'][$post->ID]['_sku'] = $fields['_sku'][0];
+          $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
+          $shop_data['products'][$post->ID]['_sale_price'] = $fields['_sale_price'][0];
+          $shop_data['products'][$post->ID]['_sku'] = $fields['_sku'][0];
         }
 
     }
