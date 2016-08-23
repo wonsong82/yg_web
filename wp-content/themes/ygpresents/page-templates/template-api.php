@@ -48,24 +48,65 @@ if(function_exists($method)){
 
 
 function getProductsInCart(){
-    global $woocommerce;
-    $items = $woocommerce->cart->get_cart();
+
+    $cart = WC()->instance()->cart;
+    $items = $cart->get_cart();
 
     $cart_data = array();
+    $cart_total = 0;
 
-    foreach($items as $item => $values) {
-        $_product = $values['data']->post;
-        $product_id = $values['product_id'];
+    $product_index = 0;
+    $music_index = 0;
 
-        $tn_1x1 = get_field('thumbnail_1x1' , $product_id);
-        $product_title = $_product->post_title;
-        $price = get_post_meta($product_id , '_price', true);
-        $quantity = $values['quantity'];
-        $line_total = $values['line_subtotal'];
+    foreach($items as $key => $values) {
 
-        $is_music = get_post_meta($product_id , '_downloadable', true);
+      $_product = $values['data']->post;
+      $product_id = $values['product_id'];
 
+      $is_music = get_post_meta($product_id , '_downloadable', true) == 'yes' ? true : false;
+
+      if($is_music == true){
+
+        $cart_data['music'][$music_index]['cart_id'] = $key;
+        $cart_data['music'][$music_index]['product_id'] = $product_id = $values['product_id'];
+        $cart_data['music'][$music_index]['variation_id'] = $values['variation_id'];
+
+        $cart_data['music'][$music_index]['product_title'] = $_product->post_title;
+        $cart_data['music'][$music_index]['price'] = get_post_meta($product_id , '_price', true);
+
+        $cart_data['music'][$music_index]['quantity'] = $values['quantity'];
+        $cart_data['music'][$music_index]['line_total'] = $line_total = $values['line_subtotal'];
+        $cart_total += $line_total;
+
+        $albumId = get_field('album', $product_id);
+        $thumb = get_field('thumbnail', $albumId[0]);
+        $cart_data['music'][$music_index]['thumb'] = $thumb;
+        $music_index++;
+
+
+      }else{
+        $cart_data['product'][$product_index]['cart_id'] = $key;
+        $cart_data['product'][$product_index]['product_id'] = $product_id = $values['product_id'];
+        $cart_data['product'][$product_index]['variation_id'] = $values['variation_id'];
+
+        $cart_data['product'][$product_index]['product_title'] = $_product->post_title;
+        $cart_data['product'][$product_index]['price'] = get_post_meta($product_id , '_price', true);
+
+        $cart_data['product'][$product_index]['quantity'] = $values['quantity'];
+        $cart_data['product'][$product_index]['line_total'] = $line_total = $values['line_subtotal'];
+        $cart_total += $line_total;
+
+        $thumb = get_field('thumbnail_2x2', $product_id);
+        $cart_data['product'][$product_index]['thumb'] = $thumb;
+        $product_index++;
+
+      }
     }
+
+    $cart_data['total'] = $cart_total;
+
+    return $cart_data;
+
 }
 
 function addProductsToCart($data){
@@ -74,12 +115,49 @@ function addProductsToCart($data){
     $variation_id = isset($data['variation_id']) ? $data['variation_id'] : 0;
     $qty = $data['qty'];
 
-
     WC()->cart->add_to_cart($product_id, $qty , $variation_id);
 
-    //After Add Items to Cart, Front needs updates cart information.
     return getProductsInCart();
 }
+
+function updateProductsInCart($data){
+
+  $cart = WC()->instance()->cart;
+
+  $product_id = $data['product_id'];
+  $variation_id = $data['variation_id'];
+
+  $cart_id = $cart->generate_cart_id($product_id, $variation_id);
+  $cart_item_id = $cart->find_product_in_cart($cart_id);
+
+  if($cart_item_id){
+    $cart->set_quantity($cart_item_id, $data['qty']);
+  }
+
+  return getProductsInCart();
+}
+
+
+function deleteProductsInCart($data){
+
+  $cart = WC()->instance()->cart;
+
+  $product_id = $data['product_id'];
+  $variation_id = $data['variation_id'];
+
+  $cart_id = $cart->generate_cart_id($product_id, $variation_id);
+  $cart_item_id = $cart->find_product_in_cart($cart_id);
+
+  if($cart_item_id){
+    $cart->set_quantity($cart_item_id, 0);
+  }
+
+  return getProductsInCart();
+}
+
+
+
+
 
 
 // 2th DONE -------------- 8/15/2016
@@ -140,12 +218,7 @@ function getTours(){
 
         /** Tour Main Data */
 
-        $date_start = convertDateFormat($fields['start_date']);
-        $date_end = convertDateFormat($fields['end_date']);
-
         $tour_data[$post->ID]['subtitle'] = $fields['subtitle'];
-        $tour_data[$post->ID]['start_date'] = $date_start;
-        $tour_data[$post->ID]['end_date'] = $date_end;
         $tour_data[$post->ID]['tour_url'] = $fields['tour_url'];
         $tour_data[$post->ID]['artist_id'] = $fields['artist'][0];
 
@@ -162,13 +235,14 @@ function getTours(){
             $tour_date = convertDateFormat($schedule['tour_date']);
             $tour_data[$post->ID]['tour_schedule'][$index]['tour_date'] = $tour_date;
 
-            if($index == 0) $begin = $tour_date;
-            else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_date;
+            if($index == 0) $begin = $tour_data[$post->ID]['start_date'] = $tour_date;
+            else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_data[$post->ID]['end_date'] = $tour_date;
 
 
             $dtTour = new DateTime($tour_date);
             $tour_date_arr[$index] = $dtTour->format('m/d');
 
+            $tour_data[$post->ID]['tour_schedule'][$index]['place'] = $schedule['place'];
             $tour_data[$post->ID]['tour_schedule'][$index]['location'] = $schedule['location'];
             $tour_data[$post->ID]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
             $tour_data[$post->ID]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
@@ -186,14 +260,15 @@ function getTours(){
 
         $tour_calendar = [];
 
+
         foreach($date_range as $date){
             $tour_calendar[$date->format('m/d')] = false;
         }
 
+
         foreach($tour_date_arr as $item){
             $tour_calendar[$item] = true;
         }
-
 
         $tour_data[$post->ID]['tour_calendar'] = $tour_calendar;
 	}
@@ -422,10 +497,9 @@ function getShops(){
             $index++;
         }
 
-
         /** Custom Field Not in WooCommerce */
 
-        $shop_data['products'][$post->ID]['artist_id'] = $custom_fields['artist'][0];
+        $shop_data['products'][$post->ID]['artist_id'] = $custom_fields['artist_product'][0];
         $shop_data['products'][$post->ID]['related'] = count($plan->get_cross_sells()) > 0 ? $plan->get_cross_sells() : [];
 
 
@@ -529,7 +603,8 @@ function getPromotions(){
 
 function convertDateFormat($date){
 
-    return date("m/d/Y", strtotime($date));
+
+  return date("Y-m-d", strtotime($date));
 
 }
 
