@@ -33,91 +33,96 @@ $requestedUri = $_SERVER['REQUEST_URI'];
 $method = substr(trim($requestedUri), 5);
 
 
+
+
 if(function_exists($method)){
+
+  if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $params = json_decode(file_get_contents('php://input'), true);
+    $data = $method($params);
+  }else{
     $data = $method();
+  }
 
-    setResponseHeader(200);
-    header('Content-type: application/json');
-    echo json_encode($data);
+  setResponseHeader(200);
+  header('Content-type: application/json');
+  echo json_encode($data);
 }else{
-
-    setResponseHeader(404);
-    echo json_encode(null);
-
+  setResponseHeader(404);
+  echo json_encode(null);
 }
+
 
 
 function getProductsInCart(){
 
-    $cart = WC()->instance()->cart;
-    $items = $cart->get_cart();
+  $cart = WC()->instance()->cart;
+  $items = $cart->get_cart();
 
-    $cart_data = array();
-    $cart_total = 0;
+  $cart_data = array();
+  $cart_total = 0;
 
-    $product_index = 0;
-    $music_index = 0;
+  $product_index = 0;
+  $music_index = 0;
 
-    foreach($items as $key => $values) {
+  foreach($items as $key => $values) {
 
-      $_product = $values['data']->post;
-      $product_id = $values['product_id'];
+    $_product = $values['data']->post;
+    $product_id = $values['product_id'];
 
-      $is_music = get_post_meta($product_id , '_downloadable', true) == 'yes' ? true : false;
+    $is_music = get_post_meta($product_id , '_downloadable', true) == 'yes' ? true : false;
 
-      if($is_music == true){
+    if($is_music == true){
+      $cart_data['music'][$music_index]['cart_id'] = $key;
+      $cart_data['music'][$music_index]['product_id'] = $product_id = $values['product_id'];
+      $cart_data['music'][$music_index]['variation_id'] = $values['variation_id'];
 
-        $cart_data['music'][$music_index]['cart_id'] = $key;
-        $cart_data['music'][$music_index]['product_id'] = $product_id = $values['product_id'];
-        $cart_data['music'][$music_index]['variation_id'] = $values['variation_id'];
+      $cart_data['music'][$music_index]['product_title'] = $_product->post_title;
+      $cart_data['music'][$music_index]['price'] = get_post_meta($product_id , '_price', true);
 
-        $cart_data['music'][$music_index]['product_title'] = $_product->post_title;
-        $cart_data['music'][$music_index]['price'] = get_post_meta($product_id , '_price', true);
+      $cart_data['music'][$music_index]['quantity'] = $values['quantity'];
+      $cart_data['music'][$music_index]['line_total'] = $line_total = $values['line_subtotal'];
+      $cart_total += $line_total;
 
-        $cart_data['music'][$music_index]['quantity'] = $values['quantity'];
-        $cart_data['music'][$music_index]['line_total'] = $line_total = $values['line_subtotal'];
-        $cart_total += $line_total;
+      $albumId = get_field('album', $product_id);
+      $thumb = get_field('thumbnail', $albumId[0]);
+      $cart_data['music'][$music_index]['thumb'] = $thumb;
+      $music_index++;
 
-        $albumId = get_field('album', $product_id);
-        $thumb = get_field('thumbnail', $albumId[0]);
-        $cart_data['music'][$music_index]['thumb'] = $thumb;
-        $music_index++;
+    }else{
+      $cart_data['product'][$product_index]['cart_id'] = $key;
+      $cart_data['product'][$product_index]['product_id'] = $product_id = $values['product_id'];
+      $cart_data['product'][$product_index]['variation_id'] = $values['variation_id'];
 
+      $cart_data['product'][$product_index]['product_title'] = $_product->post_title;
+      $cart_data['product'][$product_index]['price'] = get_post_meta($product_id , '_price', true);
 
-      }else{
-        $cart_data['product'][$product_index]['cart_id'] = $key;
-        $cart_data['product'][$product_index]['product_id'] = $product_id = $values['product_id'];
-        $cart_data['product'][$product_index]['variation_id'] = $values['variation_id'];
+      $cart_data['product'][$product_index]['quantity'] = $values['quantity'];
+      $cart_data['product'][$product_index]['line_total'] = $line_total = $values['line_subtotal'];
+      $cart_total += $line_total;
 
-        $cart_data['product'][$product_index]['product_title'] = $_product->post_title;
-        $cart_data['product'][$product_index]['price'] = get_post_meta($product_id , '_price', true);
-
-        $cart_data['product'][$product_index]['quantity'] = $values['quantity'];
-        $cart_data['product'][$product_index]['line_total'] = $line_total = $values['line_subtotal'];
-        $cart_total += $line_total;
-
-        $thumb = get_field('thumbnail_2x2', $product_id);
-        $cart_data['product'][$product_index]['thumb'] = $thumb;
-        $product_index++;
-
-      }
+      $thumb = get_field('thumbnail_2x2', $product_id);
+      $cart_data['product'][$product_index]['thumb'] = $thumb;
+      $product_index++;
     }
+  }
 
-    $cart_data['total'] = $cart_total;
+  $cart_data['total'] = $cart_total;
 
-    return $cart_data;
-
+  return $cart_data;
 }
 
 function addProductsToCart($data){
+  //For now, only 1 accepted
+  $product_id = $data['product_id'];
+  error_log($product_id);
+  $variation_id = $data['variation_id'] != null ? $data['variation_id'] : 0;
+  error_log($variation_id);
+  $qty = $data['qty'];
 
-    $product_id = $data['product_id'];
-    $variation_id = isset($data['variation_id']) ? $data['variation_id'] : 0;
-    $qty = $data['qty'];
+  WC()->cart->add_to_cart($product_id, $qty , $variation_id);
 
-    WC()->cart->add_to_cart($product_id, $qty , $variation_id);
-
-    return getProductsInCart();
+  return true;
 }
 
 function updateProductsInCart($data){
@@ -154,10 +159,6 @@ function deleteProductsInCart($data){
 
   return getProductsInCart();
 }
-
-
-
-
 
 
 // 2th DONE -------------- 8/15/2016
@@ -262,12 +263,11 @@ function getTours(){
 
 
         foreach($date_range as $date){
-            $tour_calendar[$date->format('m/d')] = false;
-        }
-
-
-        foreach($tour_date_arr as $item){
-            $tour_calendar[$item] = true;
+          $tour_calendar[] = [
+            "date" => $date->format('m/d'),
+            "day" => $date->format('D'),
+            "available" => in_array($date->format('m/d'), $tour_date_arr)
+          ];
         }
 
         $tour_data[$post->ID]['tour_calendar'] = $tour_calendar;
@@ -493,7 +493,7 @@ function getShops(){
 
         $index = 0;
         foreach( $images_ids as $image_id){
-            $shop_data['products'][$post->ID]['image'][$index] = wp_get_attachment_url($image_id);
+            $shop_data['products'][$post->ID]['images'][$index] = wp_get_attachment_url($image_id);
             $index++;
         }
 
