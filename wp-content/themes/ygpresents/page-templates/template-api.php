@@ -471,10 +471,12 @@ function getShops(){
         $terms = get_the_terms($post->ID, 'product_cat');
 
         $terms_data = array();
-        foreach($terms as $term_key => $term_value){
-            $terms_data[$term_key] = $term_value->term_id;
-        }
 
+        if($terms){
+          foreach($terms as $term_key => $term_value){
+              $terms_data[$term_key] = $term_value->term_id;
+          }
+        }
 
         $shop_data['products'][$post->ID]['id'] = $post->ID;
         $shop_data['products'][$post->ID]['post_title'] = $post->post_title;
@@ -493,7 +495,7 @@ function getShops(){
 
         $index = 0;
         $shop_data['products'][$post->ID]['images'] = [];
-      
+
         foreach( $images_ids as $image_id){
             $shop_data['products'][$post->ID]['images'][$index] = wp_get_attachment_url($image_id);
             $index++;
