@@ -492,6 +492,8 @@ function getShops(){
         $images_ids = $plan->get_gallery_attachment_ids();
 
         $index = 0;
+        $shop_data['products'][$post->ID]['images'] = [];
+      
         foreach( $images_ids as $image_id){
             $shop_data['products'][$post->ID]['images'][$index] = wp_get_attachment_url($image_id);
             $index++;
