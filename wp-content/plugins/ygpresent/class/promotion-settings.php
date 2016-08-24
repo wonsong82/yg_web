@@ -188,8 +188,7 @@ class PromotionSettings
                         <td width="5%"><input name="<?=$enable?>[<?=$id?>]" type="checkbox"
                                 <?=isset($enable_val[$id]) == '1' ? 'checked' : '' ?> value="<?= $post->post_type ?>"/></td>
                         <td width="5%"><input name="<?=$order?>[<?=$id?>]" type="number" value="<?=$order_val[$id]?>"</td>
-                        <td width="30%"><?=strlen($post->post_title) > 30 ? substr($post->post_title, 0 , 30).'...' : $post->post_title?></td>
-                        <td><?= strlen($post->post_content) > 100  ? substr($post->post_content, 0, 80).'...' : $post->post_content ?></td>
+                        <td width="50%"><?=strlen($post->post_title) > 50 ? substr($post->post_title, 0 , 50).'...' : $post->post_title?></td>
                     </tr>
                 <?php } ?>
             </table>
