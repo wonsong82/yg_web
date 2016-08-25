@@ -589,19 +589,46 @@ function getShops(){
 
 function getPromotions(){
 
-    $promotions = get_option('main_contents');
 
-    $promotions_data = array();
-    $index = 0;
+  $main_product = 'main_product';
+  $main_album = 'main_album';
+  $main_tour = 'main_tour';
+  $main_event = 'main_event';
 
-    foreach($promotions as $key => $value){
-        $promotions_data[$index]['id'] = $key;
-        $promotions_data[$index]['post_type'] = $value;
+  $options = [$main_product, $main_album, $main_tour, $main_event];
 
-        $index++;
+  foreach($options as $option){
+    $post_type = explode('_' , $option)[1];
+
+    $enables_items = get_option($option.'_enable');
+    $order_items = get_option($option.'_order');
+
+    $promotion_data[$post_type] = array();
+
+    if($enables_items){
+      foreach($enables_items as $post_id => $post_type){
+        $order = $order_items[$post_id];
+        $promotion_data[$post_type][$order]['id'] = $post_id;
+        $promotion_data[$post_type][$order]['order'] = $order;
+      }
     }
 
-    return $promotions_data;
+    /** sort by order */
+    ksort($promotion_data[$post_type]);
+
+    /** remove if count > 3 per each Post Type */
+    if(count($promotion_data[$post_type]) > 3){
+      $index = 1;
+      foreach($promotion_data[$post_type] as $key => $item){
+        if($index > 3){
+          unset($promotion_data[$post_type][$key]);
+        }
+        $index++;
+      }
+    }
+  }
+
+  return $promotion_data;
 }
 
 
