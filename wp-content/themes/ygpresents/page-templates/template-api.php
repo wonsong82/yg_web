@@ -503,7 +503,7 @@ function getShops(){
 
         /** Custom Field Not in WooCommerce */
 
-        $shop_data['products'][$post->ID]['artist_id'] = $custom_fields['artist_product'][0];
+        $shop_data['products'][$post->ID]['artist_id'] = is_array($custom_fields['artist_product']) ? $custom_fields['artist_product'][0] : '';
         $shop_data['products'][$post->ID]['related'] = count($plan->get_cross_sells()) > 0 ? $plan->get_cross_sells() : [];
 
 
