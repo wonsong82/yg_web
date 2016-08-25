@@ -206,7 +206,7 @@ function getTours(){
         $tour_data[$post->ID]['id'] = $post->ID;
         $tour_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/tour/',$post);
         $tour_data[$post->ID]['post_title'] = $post->post_title;
-        $tour_data[$post->ID]['post_content'] = $post->post_content;
+        $tour_data[$post->ID]['post_content'] = stripTags($post->post_content);
         $tour_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
 
 
@@ -293,7 +293,7 @@ function getEvents(){
 
         $event_data[$post->ID]['id'] = $post->ID;
         $event_data[$post->ID]['post_title'] = $post->post_title;
-        $event_data[$post->ID]['post_content'] = $post->post_content;
+        $event_data[$post->ID]['post_content'] = stripTags($post->post_content);
         $event_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $event_data[$post->ID]['main_image'] = $fields['main_image'];
         $event_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
@@ -330,7 +330,7 @@ function getMusics(){
 
         $album_data['albums'][$post->ID]['id'] = $post->ID;
         $album_data['albums'][$post->ID]['post_title'] = $post->post_title;
-        $album_data['albums'][$post->ID]['post_content'] = $post->post_content;
+        $album_data['albums'][$post->ID]['post_content'] = stripTags($post->post_content);
         $album_data['albums'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $album_data['albums'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/album/',$post);
 
@@ -367,7 +367,7 @@ function getMusics(){
 
         $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
         $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
-        $album_data['musics'][$music_post->ID]['post_content'] = $music_post->post_content;
+        $album_data['musics'][$music_post->ID]['post_content'] = stripTags($music_post->post_content);
         $album_data['musics'][$music_post->ID]['post_date'] = convertDateFormat($music_post->post_date);
 
 
@@ -418,7 +418,7 @@ function getBlogs(){
         $blog_data['posts'][$post->ID]['post_title'] = $post->post_title;
         $blog_data['posts'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/blog/',$post);
         $blog_data['posts'][$post->ID]['excerpt'] = $post->post_excerpt;
-        $blog_data['posts'][$post->ID]['post_content'] = $post->post_content;
+        $blog_data['posts'][$post->ID]['post_content'] = stripTags($post->post_content);
         $blog_data['posts'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $blog_data['posts'][$post->ID]['related_blog'] = $fields['related_blog'] ?: [];
         $blog_data['posts'][$post->ID]['main_image'] = $fields['main_image'];
@@ -480,7 +480,7 @@ function getShops(){
 
         $shop_data['products'][$post->ID]['id'] = $post->ID;
         $shop_data['products'][$post->ID]['post_title'] = $post->post_title;
-        $shop_data['products'][$post->ID]['post_content'] = $post->post_content;
+        $shop_data['products'][$post->ID]['post_content'] = stripTags($post->post_content);
         $shop_data['products'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $shop_data['products'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/product/', $post);
 
@@ -643,6 +643,11 @@ function getFriendlyUrl($type, $post){
 
     $permalink = get_permalink($post);
     return str_replace($type, '', parse_url($permalink)['path']);
+}
+
+function stripTags($string){
+
+  return strip_tags($string);
 }
 
 
