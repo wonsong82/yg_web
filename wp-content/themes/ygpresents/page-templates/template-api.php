@@ -206,7 +206,7 @@ function getTours(){
         $tour_data[$post->ID]['id'] = $post->ID;
         $tour_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/tour/',$post);
         $tour_data[$post->ID]['post_title'] = $post->post_title;
-        $tour_data[$post->ID]['post_content'] = $post->post_content;
+        $tour_data[$post->ID]['post_content'] = stripTags($post->post_content);
         $tour_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
 
 
@@ -293,7 +293,7 @@ function getEvents(){
 
         $event_data[$post->ID]['id'] = $post->ID;
         $event_data[$post->ID]['post_title'] = $post->post_title;
-        $event_data[$post->ID]['post_content'] = $post->post_content;
+        $event_data[$post->ID]['post_content'] = stripTags($post->post_content);
         $event_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $event_data[$post->ID]['main_image'] = $fields['main_image'];
         $event_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
@@ -330,7 +330,7 @@ function getMusics(){
 
         $album_data['albums'][$post->ID]['id'] = $post->ID;
         $album_data['albums'][$post->ID]['post_title'] = $post->post_title;
-        $album_data['albums'][$post->ID]['post_content'] = $post->post_content;
+        $album_data['albums'][$post->ID]['post_content'] = stripTags($post->post_content);
         $album_data['albums'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $album_data['albums'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/album/',$post);
 
@@ -367,7 +367,7 @@ function getMusics(){
 
         $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
         $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
-        $album_data['musics'][$music_post->ID]['post_content'] = $music_post->post_content;
+        $album_data['musics'][$music_post->ID]['post_content'] = stripTags($music_post->post_content);
         $album_data['musics'][$music_post->ID]['post_date'] = convertDateFormat($music_post->post_date);
 
 
@@ -418,7 +418,7 @@ function getBlogs(){
         $blog_data['posts'][$post->ID]['post_title'] = $post->post_title;
         $blog_data['posts'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/blog/',$post);
         $blog_data['posts'][$post->ID]['excerpt'] = $post->post_excerpt;
-        $blog_data['posts'][$post->ID]['post_content'] = $post->post_content;
+        $blog_data['posts'][$post->ID]['post_content'] = stripTags($post->post_content);
         $blog_data['posts'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $blog_data['posts'][$post->ID]['related_blog'] = $fields['related_blog'] ?: [];
         $blog_data['posts'][$post->ID]['main_image'] = $fields['main_image'];
@@ -471,14 +471,16 @@ function getShops(){
         $terms = get_the_terms($post->ID, 'product_cat');
 
         $terms_data = array();
-        foreach($terms as $term_key => $term_value){
-            $terms_data[$term_key] = $term_value->term_id;
-        }
 
+        if($terms){
+          foreach($terms as $term_key => $term_value){
+              $terms_data[$term_key] = $term_value->term_id;
+          }
+        }
 
         $shop_data['products'][$post->ID]['id'] = $post->ID;
         $shop_data['products'][$post->ID]['post_title'] = $post->post_title;
-        $shop_data['products'][$post->ID]['post_content'] = $post->post_content;
+        $shop_data['products'][$post->ID]['post_content'] = stripTags($post->post_content);
         $shop_data['products'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
         $shop_data['products'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/product/', $post);
 
@@ -493,7 +495,7 @@ function getShops(){
 
         $index = 0;
         $shop_data['products'][$post->ID]['images'] = [];
-      
+
         foreach( $images_ids as $image_id){
             $shop_data['products'][$post->ID]['images'][$index] = wp_get_attachment_url($image_id);
             $index++;
@@ -501,7 +503,7 @@ function getShops(){
 
         /** Custom Field Not in WooCommerce */
 
-        $shop_data['products'][$post->ID]['artist_id'] = $custom_fields['artist_product'][0];
+        $shop_data['products'][$post->ID]['artist_id'] = is_array($custom_fields['artist_product']) ? $custom_fields['artist_product'][0] : '';
         $shop_data['products'][$post->ID]['related'] = count($plan->get_cross_sells()) > 0 ? $plan->get_cross_sells() : [];
 
 
@@ -587,19 +589,220 @@ function getShops(){
 
 function getPromotions(){
 
-    $promotions = get_option('main_contents');
 
-    $promotions_data = array();
-    $index = 0;
+  $main_product = 'main_product';
+  $main_album = 'main_album';
+  $main_tour = 'main_tour';
+  $main_event = 'main_event';
 
-    foreach($promotions as $key => $value){
-        $promotions_data[$index]['id'] = $key;
-        $promotions_data[$index]['post_type'] = $value;
+  $options = [$main_product, $main_album, $main_tour, $main_event];
 
-        $index++;
+  foreach($options as $option){
+    $post_type = explode('_' , $option)[1];
+
+    $enables_items = get_option($option.'_enable');
+    $order_items = get_option($option.'_order');
+
+    $promotion_data[$post_type] = array();
+
+    if($enables_items){
+      foreach($enables_items as $post_id => $post_type){
+        $order = $order_items[$post_id];
+        $promotion_data[$post_type][$order]['id'] = $post_id;
+        $promotion_data[$post_type][$order]['order'] = $order;
+      }
     }
 
-    return $promotions_data;
+    /** sort by order */
+    ksort($promotion_data[$post_type]);
+
+    /** remove if count > 3 per each Post Type */
+    if(count($promotion_data[$post_type]) > 3){
+      $index = 1;
+      foreach($promotion_data[$post_type] as $key => $item){
+        if($index > 3){
+          unset($promotion_data[$post_type][$key]);
+        }
+        $index++;
+      }
+    }
+  }
+
+  return $promotion_data;
+}
+
+
+function getFacebookPhotos(){
+  $access_token="1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY";
+
+  //$fields="id,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time";
+  //$fb_page_id = "2NE1";
+
+  //$json_link = "https://graph.facebook.com/v2.3/{$fb_page_id}/albums?fields={$fields}&access_token={$access_token}";
+
+
+  //fields list
+  //https://developers.facebook.com/docs/graph-api/reference/v2.7/post/
+
+
+
+  $json_link = "https://graph.facebook.com/2NE1/posts?fields=id,picture,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time&access_token=1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY&limit=12&locale=en_US";
+
+  $json = file_get_contents($json_link);
+
+  $obj = json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
+
+
+  return $obj;
+
+}
+
+function getInstagramPhotos(){
+
+  //Instagram API
+  //https://api.instagram.com/v1/users/'USER_ID_GOES_HERE'/media/recent?access_token='YOU_ACCESS_TOKEN'
+
+  //use this instagram access token generator http://instagram.pixelunion.net/
+  $access_token="14387739.1677ed0.2335d2923cad4d18b161b1bbd6def862";
+
+  //use this to get user id https://smashballoon.com/instagram-feed/find-instagram-user-id
+  $user_id = '14387739';
+
+  $photo_count=9;
+
+  $json_link="https://api.instagram.com/v1/users/$user_id/media/recent/?";
+  $json_link.="access_token={$access_token}&count={$photo_count}";
+
+
+  $json = file_get_contents($json_link);
+  $obj = json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
+
+  return $obj;
+}
+
+
+
+
+//refer to https://www.codeofaninja.com/2015/08/display-twitter-feed-on-website.html
+//refer to http://stackoverflow.com/questions/12684765/twitter-api-returns-error-215-bad-authentication-data
+
+function getTweeterFeeds(){
+
+  $artist_posts = get_posts([
+    'post_type' => 'artist',
+    'post_status' => 'publish',
+    'posts_per_page' => -1
+  ]);
+
+  foreach($artist_posts as $key => $post){
+
+    $tweeterUsername = get_field('twitter_username', $post->ID);
+    $tweets_data[$post->ID] = [];
+
+    // If no username stored, then skip
+    if($tweeterUsername){
+      $tweets = getTweets($tweeterUsername);
+
+      $tweets_data[$post->ID]['artist_id'] = $post->ID;
+      $tweets_data[$post->ID]['url'] = 'https://twitter.com/'.$tweeterUsername;
+      $tweets_data[$post->ID]['username'] = $tweeterUsername;
+
+      $tweets_data[$post->ID]['profile_image_url'] = $tweets[0]->user->profile_image_url;
+
+      $index = 0;
+      foreach($tweets as $tweet){
+        $tweets_data[$post->ID]['tweets'][$index]['text'] = $tweet->text;
+        $tweets_data[$post->ID]['tweets'][$index]['created_at'] = $tweet->created_at;
+        $index++;
+      }
+    }
+  }
+
+  return $tweets_data;
+}
+
+function getTweets($username){
+
+  $token = '152670167-XodIHmDXLgBFs0aY3nMk4lVntEx9b98Gr6IPoe2n';
+  $token_secret = '0BUrdprSyrP8EKeLdSFxpCjo3OXUuBC4MzhXjIJDxoFJL';
+  $consumer_key = 'SvmPDVspbcyPJVs2Okhmw47iu';
+  $consumer_secret = 'TYTEIBmJ9uGkWluWW7IelDgOadZl1nOndifMOKvaM13jV0YjW3';
+
+  $host = 'api.twitter.com';
+  $method = 'GET';
+  $path = '/1.1/statuses/user_timeline.json'; // api call path
+
+  $query = array( // query parameters
+    'screen_name' => $username,
+    'count' => '10'
+  );
+
+  $oauth = array(
+    'oauth_consumer_key' => $consumer_key,
+    'oauth_token' => $token,
+    'oauth_nonce' => (string)mt_rand(), // a stronger nonce is recommended
+    'oauth_timestamp' => time(),
+    'oauth_signature_method' => 'HMAC-SHA1',
+    'oauth_version' => '1.0'
+  );
+
+  $oauth = array_map("rawurlencode", $oauth); // must be encoded before sorting
+  $query = array_map("rawurlencode", $query);
+
+  $arr = array_merge($oauth, $query); // combine the values THEN sort
+
+  asort($arr); // secondary sort (value)
+  ksort($arr); // primary sort (key)
+
+  // http_build_query automatically encodes, but our parameters
+  // are already encoded, and must be by this point, so we undo
+  // the encoding step
+  $querystring = urldecode(http_build_query($arr, '', '&'));
+
+  $url = "https://$host$path";
+
+  // mash everything together for the text to hash
+  $base_string = $method."&".rawurlencode($url)."&".rawurlencode($querystring);
+
+  // same with the key
+  $key = rawurlencode($consumer_secret)."&".rawurlencode($token_secret);
+
+  // generate the hash
+  $signature = rawurlencode(base64_encode(hash_hmac('sha1', $base_string, $key, true)));
+
+  // this time we're using a normal GET query, and we're only encoding the query params
+  // (without the oauth params)
+  $url .= "?".http_build_query($query);
+  $url=str_replace("&amp;","&",$url); //Patch by @Frewuill
+
+  $oauth['oauth_signature'] = $signature; // don't want to abandon all that work!
+  ksort($oauth); // probably not necessary, but twitter's demo does it
+
+//  also not necessary, but twitter's demo does this too
+//  function add_quotes($str) { return '"'.$str.'"'; }
+//  $oauth = array_map("add_quotes", $oauth);
+
+  // this is the full value of the Authorization line
+  $auth = "OAuth " . urldecode(http_build_query($oauth, '', ', '));
+
+  // if you're doing post, you need to skip the GET building above
+  // and instead supply query parameters to CURLOPT_POSTFIELDS
+  $options = array( CURLOPT_HTTPHEADER => array("Authorization: $auth"),
+    //CURLOPT_POSTFIELDS => $postfields,
+    CURLOPT_HEADER => false,
+    CURLOPT_URL => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_SSL_VERIFYPEER => false);
+
+  // do our business
+  $feed = curl_init();
+  curl_setopt_array($feed, $options);
+  $json = curl_exec($feed);
+  curl_close($feed);
+
+  $data = json_decode($json);
+
+  return $data;
 }
 
 
@@ -614,6 +817,11 @@ function getFriendlyUrl($type, $post){
 
     $permalink = get_permalink($post);
     return str_replace($type, '', parse_url($permalink)['path']);
+}
+
+function stripTags($string){
+
+  return strip_tags($string);
 }
 
 
