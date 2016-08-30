@@ -38,6 +38,12 @@ return [
 
   // For regular SPA routes
   [
+    'uri_pattern'   => '^(promotion)/?$',
+    'match_params'  => ['page'],
+    'page_post_id'  => 101
+  ],
+
+  [
     'uri_pattern'   => '^(promotion)/(shop|music|tour|event|blog)/(.+)/?$',
     'match_params'  => ['page'],
     'page_post_id'  => 101
