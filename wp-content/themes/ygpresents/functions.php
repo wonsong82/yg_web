@@ -193,8 +193,6 @@ if ( is_admin() ) {
 }
 
 
-
-
 function shortcode_my_orders( $atts ) {
     extract( shortcode_atts( array(
         'order_count' => -1
