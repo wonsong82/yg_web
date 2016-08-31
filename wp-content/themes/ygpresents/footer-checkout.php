@@ -6,6 +6,8 @@ $appJS = (defined('WP_DEBUG') && WP_DEBUG) ?
 $staticJS = file_exists(ABSPATH . 'static/static-page.js') ?
 	'<script src="/static/static-page.css"></script>' : '';
 
+$postName = 'checkout'; // Get uname from current post
+
 $staticPageJS = file_exists(ABSPATH . "static/static-{$postName}.js") ?
 	'<script href="/static/static-' . $postName . '.js"></script>' : '';
 

@@ -4,8 +4,8 @@
  * Template Name: Checkout
  *
  */
-the_post(); // Parse and get post
-$postName = $post->post_name; // Get uname from current post
+//the_post(); // Parse and get post
+$postName = 'checkout'; // Get uname from current post
 get_header('checkout'); ?>
 <?php
 do_action( 'estore_before_body_content' );
@@ -14,7 +14,7 @@ $estore_layout = estore_layout_class();
 ?>
 <article class="static-content <?php echo $post->post_name;?>">
   <div id="content" class="site-content" ><!-- #content.site-content -->
-    <div class="page-header clearfix" style="display:none;">
+    <div class="page-header clearfix" style="">
       <div class="tg-container">
         <?php the_title('<h2 class="entry-title">', '</h2>'); ?>
         <h3 class="entry-sub-title"><?php estore_breadcrumbs(); ?></h3>

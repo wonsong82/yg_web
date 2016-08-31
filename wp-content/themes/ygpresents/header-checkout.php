@@ -6,6 +6,8 @@ $appCss = (defined('WP_DEBUG') && WP_DEBUG) ?
 $staticCss = file_exists(ABSPATH . 'static/static-page.css') ?
 	'<link rel="stylesheet" type="text/css" href="/static/static-page.css">' : '';
 
+$postName = 'checkout'; // Get uname from current post
+
 $staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
 	'<link rel="stylesheet" type="text/css" href="/static/static-' . $postName . '.css">' : '';
 
@@ -22,8 +24,7 @@ $staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
 	<title>YG Presents</title>
 
 	<link rel="stylesheet" type="text/css" href="<?php echo $appCss?>">
-	<?php echo $staticCss ?>
-	<?php echo $staticPageCss ?>
+
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 	<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -37,6 +38,8 @@ $staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
 	<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 
 <?php wp_head(); ?>
+	<?php echo $staticCss ?>
+	<?php echo $staticPageCss ?>
 </head>
 
 <body >
