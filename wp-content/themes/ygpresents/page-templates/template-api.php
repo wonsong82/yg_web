@@ -181,8 +181,7 @@ function getArtists(){
         $artist_data[$post->ID]['bg'] = $fields['artist_image'];
         $artist_data[$post->ID]['themeColor'] = $fields['theme_color'];
         $artist_data[$post->ID]['textColor'] = $fields['font_color'];
-        $artist_data[$post->ID]['facebook_link'] = $fields['facebook_link'];
-        $artist_data[$post->ID]['instagram_link'] = $fields['instagram_link'];
+        $artist_data[$post->ID]['twitter_username'] = $fields['twitter_username'];
     }
 
     return $artist_data;
@@ -360,10 +359,13 @@ function getMusics(){
         )
     ]);
 
+
     foreach($music_posts as $music_post){
 
         $music_fields = get_post_meta($music_post->ID);
         $music_custom_fields = get_fields($music_post->ID);
+
+        if($music_custom_fields['album'] == null) continue;
 
         $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
         $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
@@ -371,8 +373,9 @@ function getMusics(){
         $album_data['musics'][$music_post->ID]['post_date'] = convertDateFormat($music_post->post_date);
 
 
-        $album_data['musics'][$music_post->ID]['_regular_price'] = $music_fields['_regular_price'][0];
+        $album_data['musics'][$music_post->ID]['_regular_price'] = $music_fields['_regular_price'][0] ?: null;
         $album_data['musics'][$music_post->ID]['_sale_price'] = $music_fields['_sale_price'][0] ?: null;
+
 
         $album_data['musics'][$music_post->ID]['album_id'] = $music_custom_fields['album'][0];
         $album_data['musics'][$music_post->ID]['sample_link'] = $music_custom_fields['sample_link'];
@@ -686,7 +689,7 @@ function getInstagramPhotos(){
 //refer to https://www.codeofaninja.com/2015/08/display-twitter-feed-on-website.html
 //refer to http://stackoverflow.com/questions/12684765/twitter-api-returns-error-215-bad-authentication-data
 
-function getTweeterFeeds(){
+function getSocialFeeds(){
 
   $artist_posts = get_posts([
     'post_type' => 'artist',
@@ -694,34 +697,90 @@ function getTweeterFeeds(){
     'posts_per_page' => -1
   ]);
 
+  $new_feed_data = [];
+
   foreach($artist_posts as $key => $post){
 
     $tweeterUsername = get_field('twitter_username', $post->ID);
-    $tweets_data[$post->ID] = [];
+    $instaUserName = get_field('instagram_username', $post->ID);
 
-    // If no username stored, then skip
-    if($tweeterUsername){
-      $tweets = getTweets($tweeterUsername);
+    $tweets = $tweeterUsername != null ?  getTweets($tweeterUsername, 3) : [];
+    $instaFeeds = $instaUserName != null ? getInsta($instaUserName, 2) : [];
 
-      $tweets_data[$post->ID]['artist_id'] = $post->ID;
-      $tweets_data[$post->ID]['url'] = 'https://twitter.com/'.$tweeterUsername;
-      $tweets_data[$post->ID]['username'] = $tweeterUsername;
 
-      $tweets_data[$post->ID]['profile_image_url'] = $tweets[0]->user->profile_image_url;
+    $feed_data = [];
 
-      $index = 0;
+    if($tweets && count($tweets) > 0){
       foreach($tweets as $tweet){
-        $tweets_data[$post->ID]['tweets'][$index]['text'] = $tweet->text;
-        $tweets_data[$post->ID]['tweets'][$index]['created_at'] = $tweet->created_at;
-        $index++;
+        $time_created_at = strtotime($tweet->created_at);
+
+        $feed_data[$time_created_at]['type'] = 'tweeter';
+        $feed_data[$time_created_at]['artist_id'] = $post->ID;
+        $feed_data[$time_created_at]['url'] = 'https://twitter.com/'.$tweeterUsername;
+        $feed_data[$time_created_at]['username'] = $tweeterUsername;
+        $feed_data[$time_created_at]['text'] = $tweet->text;
+        $feed_data[$time_created_at]['created_at'] = convertDateFormat($tweet->created_at);
+        $feed_data[$time_created_at]['image'] = '';
+        $feed_data[$time_created_at]['profile_image'] = $tweet->user->profile_image_url;
+
       }
+    }
+
+
+    if($instaFeeds && count($instaFeeds) > 0){
+      foreach($instaFeeds as $feed){
+        $time_created_at = $feed->created_time;
+
+        $feed_data[$time_created_at]['type'] = 'instagram';
+        $feed_data[$time_created_at]['artist_id'] = $post->ID;
+        $feed_data[$time_created_at]['url'] = $feed->link;
+        $feed_data[$time_created_at]['username'] = $instaUserName;
+        $feed_data[$time_created_at]['text'] = '';
+        $feed_data[$time_created_at]['created_at'] = date('Y-m-d', $feed->created_time);
+        $feed_data[$time_created_at]['image'] = $feed->images->thumbnail->url;
+        $feed_data[$time_created_at]['profile_image'] = '';
+      }
+    }
+
+    krsort($feed_data);
+
+    //After krsort, rename key value
+    $index = 0;
+    foreach($feed_data as $key => $item){
+      $new_feed_data[$post->ID][$index] = $item;
+      $index++;
     }
   }
 
-  return $tweets_data;
+  return $new_feed_data;
 }
 
-function getTweets($username){
+function getInsta($username, $count){
+
+  $url =  'https://www.instagram.com/'.$username.'/media/';
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+  $json = curl_exec($ch);
+  curl_close($ch);
+
+  $data = (array) json_decode($json);
+  $data = $data['items'];
+
+  //API call 로 최대 호출 가능 수 20.
+  if($count > 20) $count = 20;
+
+  foreach($data as $key => $item){
+   if($key > $count-1){
+     unset($data[$key]);
+   }
+  }
+  return $data;
+}
+
+function getTweets($username, $count){
 
   $token = '152670167-XodIHmDXLgBFs0aY3nMk4lVntEx9b98Gr6IPoe2n';
   $token_secret = '0BUrdprSyrP8EKeLdSFxpCjo3OXUuBC4MzhXjIJDxoFJL';
@@ -734,7 +793,7 @@ function getTweets($username){
 
   $query = array( // query parameters
     'screen_name' => $username,
-    'count' => '10'
+    'count' => $count+3
   );
 
   $oauth = array(
@@ -802,15 +861,20 @@ function getTweets($username){
 
   $data = json_decode($json);
 
+
+  foreach($data as $key => $item){
+    if($key > $count-1){
+      unset($data[$key]);
+    }
+  }
+
+
   return $data;
 }
 
 
 function convertDateFormat($date){
-
-
   return date("Y-m-d", strtotime($date));
-
 }
 
 function getFriendlyUrl($type, $post){
