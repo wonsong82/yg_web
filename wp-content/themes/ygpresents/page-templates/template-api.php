@@ -359,10 +359,13 @@ function getMusics(){
         )
     ]);
 
+
     foreach($music_posts as $music_post){
 
         $music_fields = get_post_meta($music_post->ID);
         $music_custom_fields = get_fields($music_post->ID);
+
+        if($music_custom_fields['album'] == null) continue;
 
         $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
         $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
@@ -370,8 +373,9 @@ function getMusics(){
         $album_data['musics'][$music_post->ID]['post_date'] = convertDateFormat($music_post->post_date);
 
 
-        $album_data['musics'][$music_post->ID]['_regular_price'] = $music_fields['_regular_price'][0];
+        $album_data['musics'][$music_post->ID]['_regular_price'] = $music_fields['_regular_price'][0] ?: null;
         $album_data['musics'][$music_post->ID]['_sale_price'] = $music_fields['_sale_price'][0] ?: null;
+
 
         $album_data['musics'][$music_post->ID]['album_id'] = $music_custom_fields['album'][0];
         $album_data['musics'][$music_post->ID]['sample_link'] = $music_custom_fields['sample_link'];
