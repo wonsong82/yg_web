@@ -27,7 +27,7 @@ $args = array(
 	'post_status' => 'publish'
 );
 
-$pages = get_pages($args); 
+$pages = get_pages($args);
 
 $requestedUri = $_SERVER['REQUEST_URI'];
 $method = substr(trim($requestedUri), 5);
@@ -47,6 +47,7 @@ if(function_exists($method)){
   setResponseHeader(200);
   header('Content-type: application/json');
   echo json_encode($data);
+
 }else{
   setResponseHeader(404);
   echo json_encode(null);
@@ -64,6 +65,7 @@ function getProductsInCart(){
 
   $product_index = 0;
   $music_index = 0;
+  $total_qty = 0;
 
   foreach($items as $key => $values) {
 
@@ -88,6 +90,7 @@ function getProductsInCart(){
       $thumb = get_field('thumbnail', $albumId[0]);
       $cart_data['music'][$music_index]['thumb'] = $thumb;
       $music_index++;
+      $total_qty += $values['quantity'];
 
     }else{
       $cart_data['product'][$product_index]['cart_id'] = $key;
@@ -104,9 +107,10 @@ function getProductsInCart(){
       $thumb = get_field('thumbnail_2x2', $product_id);
       $cart_data['product'][$product_index]['thumb'] = $thumb;
       $product_index++;
+      $total_qty += $values['quantity'];
     }
   }
-
+  $cart_data['products_count'] = $total_qty;
   $cart_data['total'] = $cart_total;
 
   return $cart_data;
@@ -127,6 +131,10 @@ function addProductsToCart($data){
 
 function updateProductsInCart($data){
 
+  error_log('start update Product Cart');
+  error_log($data['product_id']);
+  error_log($data['qty']);
+
   $cart = WC()->instance()->cart;
 
   $product_id = $data['product_id'];
@@ -139,13 +147,17 @@ function updateProductsInCart($data){
     $cart->set_quantity($cart_item_id, $data['qty']);
   }
 
-  return getProductsInCart();
+  error_log('update products to cart');
+
+  return true;
 }
 
 
 function deleteProductsInCart($data){
 
   $cart = WC()->instance()->cart;
+
+  error_log($data['product_id']);
 
   $product_id = $data['product_id'];
   $variation_id = $data['variation_id'];
@@ -157,7 +169,9 @@ function deleteProductsInCart($data){
     $cart->set_quantity($cart_item_id, 0);
   }
 
-  return getProductsInCart();
+  error_log('remove products to cart');
+
+  return true;
 }
 
 
@@ -408,27 +422,35 @@ function getBlogs(){
     $blog_posts = get_posts([
         'post_type' => 'blog',
         'post_status' => 'publish',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC'
     ]);
 
     $blog_data = array();
+    $blog_order = array();
 
     foreach($blog_posts as $key => $post){
 
         $fields = get_fields($post->ID);
+        $postId = $post->ID;
 
-        $blog_data['posts'][$post->ID]['id'] = $post->ID;
-        $blog_data['posts'][$post->ID]['post_title'] = $post->post_title;
-        $blog_data['posts'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/blog/',$post);
-        $blog_data['posts'][$post->ID]['excerpt'] = $post->post_excerpt;
-        $blog_data['posts'][$post->ID]['post_content'] = stripTags($post->post_content);
-        $blog_data['posts'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
-        $blog_data['posts'][$post->ID]['related_blog'] = $fields['related_blog'] ?: [];
-        $blog_data['posts'][$post->ID]['main_image'] = $fields['main_image'];
-        $blog_data['posts'][$post->ID]['thumb_2x1'] = $fields['thumbnail_2x1'];
-        $blog_data['posts'][$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
+        //for order to appear on list page
+        array_push($blog_order, $post->ID);
+
+        $blog_data['posts'][$postId]['id'] = $post->ID;
+        $blog_data['posts'][$postId]['post_title'] = $post->post_title;
+        $blog_data['posts'][$postId]['url_friendly_name'] = getFriendlyUrl('/blog/',$post);
+        $blog_data['posts'][$postId]['excerpt'] = $post->post_excerpt;
+        $blog_data['posts'][$postId]['post_content'] = stripTags($post->post_content);
+        $blog_data['posts'][$postId]['post_date'] = convertDateFormat($post->post_date);
+        $blog_data['posts'][$postId]['related_blog'] = $fields['related_blog'] ?: [];
+        $blog_data['posts'][$postId]['main_image'] = $fields['main_image'];
+        $blog_data['posts'][$postId]['thumb_2x1'] = $fields['thumbnail_2x1'];
+        $blog_data['posts'][$postId]['thumb_3x2'] = $fields['thumbnail_3x2'];
     }
 
+    $blog_data['posts_order'] = $blog_order;
 
     $hot_blogs = get_option('sub_hot_blog_enable');
     $index = 0;
@@ -441,6 +463,7 @@ function getBlogs(){
     }else{
         $blog_data['hot_posts'] = [];
     }
+
 
 
     return $blog_data;
