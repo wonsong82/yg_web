@@ -1,0 +1,72 @@
+.App .Page .Static {
+    width: auto;
+}
+
+#content > div.page-header,
+.App .Page .Static,
+.woocommerce .woocommerce-error, .woocommerce .woocommerce-info, .woocommerce .woocommerce-message,
+.App .Page .Static .static-content.checkout .woocommerce {
+    background-color:#F0F0F0;
+}
+.woocommerce .woocommerce-info{
+    border-left:none !important;
+}
+
+.App .Page .Static .static-content .woocommerce form .form-row {
+    margin-bottom: 5px;
+}
+
+.App .Page .Static .static-content .woocommerce p, .App .Page .Static .static-content .woocommerce address{
+    margin-bottom: 5px;
+}
+
+
+.woocommerce #payment #place_order, .woocommerce-page #payment #place_order
+{
+    float: inherit;
+}
+
+.App .Page .Static .static-content .woocommerce form .form-row.form-row-first, .App .Page .Static .static-content .woocommerce form .form-row.form-row-last{
+    margin-left : 0px;
+}
+
+.woocommerce .woocommerce-info:before, .woocommerce .woocommerce-error:before, .woocommerce .woocommerce-message:before{
+    content:none;
+}
+
+.woocommerce .woocommerce-error, .woocommerce .woocommerce-info, .woocommerce .woocommerce-message {
+    padding:0px 0px 5px 0px!important;
+
+}
+
+#root > div > div.Page {
+    padding:0px;
+}
+
+#content > div.page-header  {
+    padding:0px;
+    margin-bottom:0px;
+}
+
+/*.woocommerce-checkout #payment div.payment_box,*/
+#content > div > div > h3.entry-sub-title{
+    display:none !important;
+}
+
+.App .Page .Static .static-content .woocommerce .shop_table{
+    display:block;
+}
+
+
+#add_payment_method #payment ul.payment_methods, .woocommerce-checkout #payment ul.payment_methods,
+.woocommerce table.shop_table.woocommerce-checkout-review-order-table tr th:first-child,
+.woocommerce table.shop_table.woocommerce-checkout-review-order-table tr.order-total td,
+#add_payment_method #payment div.form-row, .woocommerce-checkout #payment div.form-row
+.App .Page .Static .static-content table thead tr th {
+    background-color:#F0F0F0;
+}
+
+article{
+    padding-bottom: 100px;
+
+}

@@ -1,31 +1,51 @@
 <?php
-/**
- * The header for our theme.
- *
- * This is the template that displays all of the <head> section and everything up until </header>
- *
- * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
- *
- * @package ThemeGrill
- * @subpackage eStore
- * @since eStore 0.1
- */
+$appCss = (defined('WP_DEBUG') && WP_DEBUG) ?
+	'http://localhost:8080/app.css' :
+	'/static/app.css';
+
+$staticCss = file_exists(ABSPATH . 'static/static-page.css') ?
+	'<link rel="stylesheet" type="text/css" href="/static/static-page.css">' : '';
+
+$postName = 'checkout'; // Get uname from current post
+
+$staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
+	'<link rel="stylesheet" type="text/css" href="/static/static-' . $postName . '.css">' : '';
 
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="profile" href="http://gmpg.org/xfn/11">
-<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>YG Presents</title>
+
+	<link rel="stylesheet" type="text/css" href="<?php echo $appCss?>">
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="apple-mobile-web-app-title" content="YG Presents">
+	<meta name="application-name" content="YG Presents">
+	<meta name="theme-color" content="#ffffff">
+
+	<link rel="profile" href="http://gmpg.org/xfn/11">
+	<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 
 <?php wp_head(); ?>
+	<?php echo $staticCss ?>
+	<?php echo $staticPageCss ?>
 </head>
 
-<body <?php body_class(); ?>>
+<body >
+<div class="StaticPage">
 	<?php do_action( 'tg_before' ); ?>
-	<div id="page" class="hfeed site">
+<!--	<div id="page" class="hfeed site">-->
 		<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'estore' ); ?></a>
 
 		<?php do_action( 'estore_before_header' ); ?>
