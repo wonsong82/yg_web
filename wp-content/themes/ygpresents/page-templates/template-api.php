@@ -32,8 +32,7 @@ $pages = get_pages($args);
 $requestedUri = $_SERVER['REQUEST_URI'];
 $method = substr(trim($requestedUri), 5);
 
-
-
+require_once (ABSPATH.'wp-content/plugins/ygpresent/class/EmailSubscriber.php');
 
 if(function_exists($method)){
 
@@ -170,6 +169,13 @@ function deleteProductsInCart($data){
   }
 
   error_log('remove products to cart');
+
+  return true;
+}
+
+function newsletterSignup($email){
+  $instance = new EmailSubscriber();
+  $instance->addEmail($email);
 
   return true;
 }
