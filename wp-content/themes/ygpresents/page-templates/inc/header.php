@@ -43,4 +43,3 @@ $staticPageCss = file_exists(ABSPATH . "static/static-{$postName}.css") ?
 </head>
 <body>
 
-<div class="StaticPage">
