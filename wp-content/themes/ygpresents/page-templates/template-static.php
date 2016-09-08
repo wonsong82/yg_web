@@ -11,8 +11,9 @@ $postName = $post->post_name; // Get uname from current post
 require __DIR__ . '/inc/header.php';
 ?>
 
+<div class="StaticPage">
 
-<article class="static-content <?php echo $post->post_name;?>">
+  <article class="static-content <?php echo $post->post_name;?>">
   <?php the_content(); ?>
   <?php
   $pages = array("my-account","my-orders");
@@ -31,7 +32,9 @@ require __DIR__ . '/inc/header.php';
           </div>';
   }
   ?>
-</article>
+  </article>
+
+</div>
 
 
 <?php

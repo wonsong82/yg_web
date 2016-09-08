@@ -10,8 +10,6 @@ $staticPageJS = file_exists(ABSPATH . "static/static-{$postName}.js") ?
   '<script href="/static/static-' . $postName . '.js"></script>' : '';
 
 ?>
-</div>
-
 <div id="root">
   <div class="page-loading">
     <div class="page-loading__spinner">
