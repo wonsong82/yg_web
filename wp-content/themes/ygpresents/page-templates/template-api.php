@@ -208,39 +208,47 @@ function getArtists(){
 }
 
 // 2th DONE -------------- 8/15/2016
+
 function getTours(){
 
 	$tour_posts = get_posts([
 		'post_type' => 'tour',
         'post_status' => 'publish',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC'
 	]);
 
 	$tour_data = array();
+  $tour_order = array();
 
 	foreach($tour_posts as $key => $post){
 		$fields = get_fields($post->ID);
+    $postId = $post->ID;
+
+    //for order to appear on list page
+    array_push($tour_order, $postId);
 
         /** Tour Post Data */
-        $tour_data[$post->ID]['id'] = $post->ID;
-        $tour_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/tour/',$post);
-        $tour_data[$post->ID]['post_title'] = $post->post_title;
-        $tour_data[$post->ID]['post_content'] = stripTags($post->post_content);
-        $tour_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
+        $tour_data['tours'][$postId]['id'] = $post->ID;
+        $tour_data['tours'][$postId]['url_friendly_name'] = getFriendlyUrl('/tour/',$post);
+        $tour_data['tours'][$postId]['post_title'] = $post->post_title;
+        $tour_data['tours'][$postId]['post_content'] = stripTags($post->post_content);
+        $tour_data['tours'][$postId]['post_date'] = convertDateFormat($post->post_date);
 
 
         /** Image Data */
-        $tour_data[$post->ID]['main_image'] = $fields['main_image'];
-        $tour_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
-        $tour_data[$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
-        $tour_data[$post->ID]['thumb_2x1'] = $fields['thumbnail_2x1'];
+        $tour_data['tours'][$postId]['main_image'] = $fields['main_image'];
+        $tour_data['tours'][$postId]['thumb_1x1'] = $fields['thumbnail'];
+        $tour_data['tours'][$postId]['thumb_3x2'] = $fields['thumbnail_3x2'];
+        $tour_data['tours'][$postId]['thumb_2x1'] = $fields['thumbnail_2x1'];
 
 
         /** Tour Main Data */
 
-        $tour_data[$post->ID]['subtitle'] = $fields['subtitle'];
-        $tour_data[$post->ID]['tour_url'] = $fields['tour_url'];
-        $tour_data[$post->ID]['artist_id'] = $fields['artist'][0];
+        $tour_data['tours'][$postId]['subtitle'] = $fields['subtitle'];
+        $tour_data['tours'][$postId]['tour_url'] = $fields['tour_url'];
+        $tour_data['tours'][$postId]['artist_id'] = $fields['artist'][0];
 
 
         /** Tour Schedule Data Array */
@@ -253,20 +261,20 @@ function getTours(){
         foreach($fields['tour_schedule'] as $schedule){
 
             $tour_date = convertDateFormat($schedule['tour_date']);
-            $tour_data[$post->ID]['tour_schedule'][$index]['tour_date'] = $tour_date;
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['tour_date'] = $tour_date;
 
-            if($index == 0) $begin = $tour_data[$post->ID]['start_date'] = $tour_date;
-            else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_data[$post->ID]['end_date'] = $tour_date;
+            if($index == 0) $begin = $tour_data['tours'][$postId]['start_date'] = $tour_date;
+            else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_data['tours'][$post->ID]['end_date'] = $tour_date;
 
 
             $dtTour = new DateTime($tour_date);
             $tour_date_arr[$index] = $dtTour->format('m/d');
 
-            $tour_data[$post->ID]['tour_schedule'][$index]['place'] = $schedule['place'];
-            $tour_data[$post->ID]['tour_schedule'][$index]['location'] = $schedule['location'];
-            $tour_data[$post->ID]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
-            $tour_data[$post->ID]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
-            $tour_data[$post->ID]['tour_schedule'][$index]['ticket_availability'] = $schedule['ticket_availability'];
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['place'] = $schedule['place'];
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['location'] = $schedule['location'];
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['ticket_availability'] = $schedule['ticket_availability'];
             $index++;
         }
 
@@ -289,8 +297,10 @@ function getTours(){
           ];
         }
 
-        $tour_data[$post->ID]['tour_calendar'] = $tour_calendar;
+        $tour_data['tours'][$postId]['tour_calendar'] = $tour_calendar;
 	}
+
+  $tour_data['tours_order'] = $tour_order;
 
 	return $tour_data;
 }
@@ -302,27 +312,34 @@ function getEvents(){
 	$event_posts = get_posts([
 		'post_type' => 'event',
         'post_status' => 'publish',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC'
 	]);
 
 	$event_data = array();
+  $event_order = array();
 
 	foreach($event_posts as $key => $post){
 		$fields = get_fields($post->ID);
+    $postId = $post->ID;
 
-        $event_data[$post->ID]['id'] = $post->ID;
-        $event_data[$post->ID]['post_title'] = $post->post_title;
-        $event_data[$post->ID]['post_content'] = stripTags($post->post_content);
-        $event_data[$post->ID]['post_date'] = convertDateFormat($post->post_date);
-        $event_data[$post->ID]['main_image'] = $fields['main_image'];
-        $event_data[$post->ID]['thumb_1x1'] = $fields['thumbnail'];
-        $event_data[$post->ID]['thumb_3x2'] = $fields['thumbnail_3x2'];
-        $event_data[$post->ID]['excerpt'] = $fields['short_description'];
-        $event_data[$post->ID]['url_friendly_name'] = getFriendlyUrl('/event/', $post);
-        $event_data[$post->ID]['artist_id'] = $fields['artist'][0];
-        $event_data[$post->ID]['related_event'] = $fields['related_event'] ?: [];
+    array_push($event_order, $postId);
 
+    $event_data['events'][$postId]['id'] = $post->ID;
+    $event_data['events'][$postId]['post_title'] = $post->post_title;
+    $event_data['events'][$postId]['post_content'] = stripTags($post->post_content);
+    $event_data['events'][$postId]['post_date'] = convertDateFormat($post->post_date);
+    $event_data['events'][$postId]['main_image'] = $fields['main_image'];
+    $event_data['events'][$postId]['thumb_1x1'] = $fields['thumbnail'];
+    $event_data['events'][$postId]['thumb_3x2'] = $fields['thumbnail_3x2'];
+    $event_data['events'][$postId]['excerpt'] = $fields['short_description'];
+    $event_data['events'][$postId]['url_friendly_name'] = getFriendlyUrl('/event/', $post);
+    $event_data['events'][$postId]['artist_id'] = $fields['artist'][0];
+    $event_data['events'][$postId]['related_event'] = $fields['related_event'] ?: [];
 	}
+
+	$event_data['event_order'] = $event_order;
 
 	return $event_data;
 
@@ -338,32 +355,38 @@ function getMusics(){
     $album_posts = get_posts([
         'post_type' => 'album',
         'post_status' => 'publish',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC'
     ]);
 
     $album_data = array();
+    $album_order = array();
 
     foreach($album_posts as $post){
 
         $fields = get_fields($post->ID);
+        $postId = $post->ID;
 
-        $album_data['albums'][$post->ID]['id'] = $post->ID;
-        $album_data['albums'][$post->ID]['post_title'] = $post->post_title;
-        $album_data['albums'][$post->ID]['post_content'] = stripTags($post->post_content);
-        $album_data['albums'][$post->ID]['post_date'] = convertDateFormat($post->post_date);
-        $album_data['albums'][$post->ID]['url_friendly_name'] = getFriendlyUrl('/album/',$post);
+        array_push($album_order, $postId);
 
-        $album_data['albums'][$post->ID]['thumb_1x1'] = $fields['thumbnail'];
-        $album_data['albums'][$post->ID]['cover_image'] = $fields['cover_image'];
+        $album_data['albums'][$postId]['id'] = $post->ID;
+        $album_data['albums'][$postId]['post_title'] = $post->post_title;
+        $album_data['albums'][$postId]['post_content'] = stripTags($post->post_content);
+        $album_data['albums'][$postId]['post_date'] = convertDateFormat($post->post_date);
+        $album_data['albums'][$postId]['url_friendly_name'] = getFriendlyUrl('/album/',$post);
 
-        $album_data['albums'][$post->ID]['album_url'] = $fields['album_url'];
-        $album_data['albums'][$post->ID]['album_release_date'] = convertDateFormat($fields['album_release_date']);
+        $album_data['albums'][$postId]['thumb_1x1'] = $fields['thumbnail'];
+        $album_data['albums'][$postId]['cover_image'] = $fields['cover_image'];
 
-        $album_data['albums'][$post->ID]['artist_id'] = $fields['artist'][0];
-        $album_data['albums'][$post->ID]['related_album'] = $fields['related_album'] ?: [];
+        $album_data['albums'][$postId]['album_url'] = $fields['album_url'];
+        $album_data['albums'][$postId]['album_release_date'] = convertDateFormat($fields['album_release_date']);
+
+        $album_data['albums'][$postId]['artist_id'] = $fields['artist'][0];
+        $album_data['albums'][$postId]['related_album'] = $fields['related_album'] ?: [];
     }
 
-
+        $album_data['albums_order'] = $album_order;
 
     /** MUSIC DATA */
 
@@ -483,6 +506,8 @@ function getShops(){
         'post_type' => 'product',
         'post_status' => 'publish',
         'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC',
         'meta_query' => array(
             array(
                 'key' => '_downloadable',
@@ -492,11 +517,13 @@ function getShops(){
     ]);
 
     $shop_data = array();
-
+    $product_order = array();
     foreach($shop_posts as $key => $post){
+
 
         $fields = get_post_meta($post->ID);
         $custom_fields = get_fields($post->ID);
+        array_push($product_order, $post->ID);
 
         $plan = wc_get_product($post->ID);
 
@@ -592,8 +619,9 @@ function getShops(){
           $shop_data['products'][$post->ID]['_sale_price'] = $fields['_sale_price'][0];
           $shop_data['products'][$post->ID]['_sku'] = $fields['_sku'][0];
         }
-
     }
+
+    $shop_data['products_order'] = $product_order;
 
 
     $categories =  get_categories([
