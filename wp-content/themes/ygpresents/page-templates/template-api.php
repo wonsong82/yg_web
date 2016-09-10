@@ -184,7 +184,7 @@ function newsletterSignup($data){
 
 // 2th DONE -------------- 8/15/2016
 function getArtists(){
-    
+
     $artist_posts = get_posts([
         'post_type' => 'artist',
         'post_status' => 'publish',
@@ -385,9 +385,10 @@ function getMusics(){
 
         $album_data['albums'][$postId]['artist_id'] = $fields['artist'][0];
         $album_data['albums'][$postId]['related_album'] = $fields['related_album'] ?: [];
+        $album_data['albums'][$postId]['individual_name'] = isset($fields['individual_name']) ? $fields['individual_name'] : '';
     }
 
-        $album_data['albums_order'] = $album_order;
+    $album_data['albums_order'] = $album_order;
 
     /** MUSIC DATA */
 
