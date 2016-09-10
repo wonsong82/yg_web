@@ -173,17 +173,18 @@ function deleteProductsInCart($data){
   return true;
 }
 
-function newsletterSignup($email){
-  $instance = new EmailSubscriber();
-  $instance->addEmail($email);
+function newsletterSignup($data){
 
-  return true;
+    $instance = new EmailSubscriber();
+    $instance->addEmail($data['email']);
+
+    return true;
 }
 
 
 // 2th DONE -------------- 8/15/2016
 function getArtists(){
-
+    
     $artist_posts = get_posts([
         'post_type' => 'artist',
         'post_status' => 'publish',
