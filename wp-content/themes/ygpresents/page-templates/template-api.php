@@ -9,6 +9,8 @@
 //dd('<pre>', true);
 
 
+
+
 $args = array(
 	'sort_order' => 'asc',
 	'sort_column' => 'post_title',
@@ -598,9 +600,17 @@ function getShops(){
           //Get All Attributes this product used along with sort ordering
           $all_attributes = $plan->get_attributes();
 
-          $att_temp = array();
+//              $fabric_values = get_the_terms( $post->ID, $attr['name']);
+
+
+            $att_temp = array();
           foreach($all_attributes as $attr){
-            $att_temp['attribute_'.$attr['name']] = explode(",", $plan->get_attribute($attr['name']));
+
+            $terms = get_the_terms($post->ID, $attr['name']);
+
+              foreach($terms as $term){
+                  $att_temp['attribute_'.$attr['name']][$term->slug] = $term->name;
+              }
           }
 
           $shop_data['products'][$post->ID]['attributes'] = $att_temp;
