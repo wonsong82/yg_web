@@ -264,13 +264,21 @@ function getTours(){
             $tour_date = convertDateFormat($schedule['tour_date']);
             $tour_data['tours'][$postId]['tour_schedule'][$index]['tour_date'] = $tour_date;
 
+
             if($index == 0) $begin = $tour_data['tours'][$postId]['start_date'] = $tour_date;
             else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_data['tours'][$post->ID]['end_date'] = $tour_date;
 
 
             $dtTour = new DateTime($tour_date);
+            $now = new DateTime();
             $tour_date_arr[$index] = $dtTour->format('m/d');
 
+            $dtTour->modify(' +1 days ');
+
+            //check if tour_date is a past date to the current data. if yes, is_expired to true.
+
+
+            $tour_data['tours'][$postId]['tour_schedule'][$index]['is_tour_end'] =  $now > $dtTour ? true : false;
             $tour_data['tours'][$postId]['tour_schedule'][$index]['place'] = $schedule['place'];
             $tour_data['tours'][$postId]['tour_schedule'][$index]['location'] = $schedule['location'];
             $tour_data['tours'][$postId]['tour_schedule'][$index]['event_time'] = $schedule['event_time'];
@@ -346,7 +354,6 @@ function getEvents(){
 
 }
 
-
 // 2th DONE -------------- 8/15/2016
 function getMusics(){
 
@@ -404,7 +411,6 @@ function getMusics(){
         )
     ]);
 
-
     foreach($music_posts as $music_post){
 
         $music_fields = get_post_meta($music_post->ID);
@@ -423,12 +429,31 @@ function getMusics(){
 
 
         $album_data['musics'][$music_post->ID]['album_id'] = $music_custom_fields['album'][0];
-        $album_data['musics'][$music_post->ID]['sample_link'] = $music_custom_fields['sample_link'];
+
+
+        $file = $music_fields['_downloadable_files'][0];
+        $unserialized = unserialize($file);
+
+
+        $fileLink = null;
+        $sample_link = null;
+        if(count($unserialized) > 0){
+            foreach($unserialized as $item){
+                $fileLink = $item['file'];
+            }
+
+            $sample_link = str_replace('.mp3', '-sample.mp3', str_replace('/woocommerce_uploads', '', $fileLink));
+        }
+
+        if($music_custom_fields['music_product_type'] == 'album') $sample_link = null;
+
+
+        $album_data['musics'][$music_post->ID]['sample_link'] = $sample_link;
+
         $album_data['musics'][$music_post->ID]['youtube_link'] = $music_custom_fields['youtube_link'];
         $album_data['musics'][$music_post->ID]['product_type'] = $music_custom_fields['music_product_type'];
 
     }
-
 
     /** HOT TRACK DATA */
 
@@ -758,58 +783,61 @@ function getSocialFeeds(){
 
   $new_feed_data = [];
 
-  foreach($artist_posts as $key => $post){
+  if(false){
+      foreach($artist_posts as $key => $post){
 
-    $tweeterUsername = get_field('twitter_username', $post->ID);
-    $instaUserName = get_field('instagram_username', $post->ID);
+          $tweeterUsername = get_field('twitter_username', $post->ID);
+          $instaUserName = get_field('instagram_username', $post->ID);
 
-    $tweets = $tweeterUsername != null ?  getTweets($tweeterUsername, 3) : [];
-    $instaFeeds = $instaUserName != null ? getInsta($instaUserName, 2) : [];
+          $tweets = $tweeterUsername != null ?  getTweets($tweeterUsername, 3) : [];
+          $instaFeeds = $instaUserName != null ? getInsta($instaUserName, 2) : [];
 
 
-    $feed_data = [];
+          $feed_data = [];
 
-    if($tweets && count($tweets) > 0){
-      foreach($tweets as $tweet){
-        $time_created_at = strtotime($tweet->created_at);
+          if($tweets && count($tweets) > 0){
+              foreach($tweets as $tweet){
+                  $time_created_at = strtotime($tweet->created_at);
 
-        $feed_data[$time_created_at]['type'] = 'tweeter';
-        $feed_data[$time_created_at]['artist_id'] = $post->ID;
-        $feed_data[$time_created_at]['url'] = 'https://twitter.com/'.$tweeterUsername;
-        $feed_data[$time_created_at]['username'] = $tweeterUsername;
-        $feed_data[$time_created_at]['text'] = $tweet->text;
-        $feed_data[$time_created_at]['created_at'] = convertDateFormat($tweet->created_at);
-        $feed_data[$time_created_at]['image'] = '';
-        $feed_data[$time_created_at]['profile_image'] = $tweet->user->profile_image_url;
+                  $feed_data[$time_created_at]['type'] = 'tweeter';
+                  $feed_data[$time_created_at]['artist_id'] = $post->ID;
+                  $feed_data[$time_created_at]['url'] = 'https://twitter.com/'.$tweeterUsername;
+                  $feed_data[$time_created_at]['username'] = $tweeterUsername;
+                  $feed_data[$time_created_at]['text'] = $tweet->text;
+                  $feed_data[$time_created_at]['created_at'] = convertDateFormat($tweet->created_at);
+                  $feed_data[$time_created_at]['image'] = '';
+                  $feed_data[$time_created_at]['profile_image'] = $tweet->user->profile_image_url;
 
+              }
+          }
+
+
+          if($instaFeeds && count($instaFeeds) > 0){
+              foreach($instaFeeds as $feed){
+                  $time_created_at = $feed->created_time;
+
+                  $feed_data[$time_created_at]['type'] = 'instagram';
+                  $feed_data[$time_created_at]['artist_id'] = $post->ID;
+                  $feed_data[$time_created_at]['url'] = $feed->link;
+                  $feed_data[$time_created_at]['username'] = $instaUserName;
+                  $feed_data[$time_created_at]['text'] = '';
+                  $feed_data[$time_created_at]['created_at'] = date('Y-m-d', $feed->created_time);
+                  $feed_data[$time_created_at]['image'] = $feed->images->thumbnail->url;
+                  $feed_data[$time_created_at]['profile_image'] = '';
+              }
+          }
+
+          krsort($feed_data);
+
+          //After krsort, rename key value
+          $index = 0;
+          foreach($feed_data as $key => $item){
+              $new_feed_data[$post->ID][$index] = $item;
+              $index++;
+          }
       }
-    }
-
-
-    if($instaFeeds && count($instaFeeds) > 0){
-      foreach($instaFeeds as $feed){
-        $time_created_at = $feed->created_time;
-
-        $feed_data[$time_created_at]['type'] = 'instagram';
-        $feed_data[$time_created_at]['artist_id'] = $post->ID;
-        $feed_data[$time_created_at]['url'] = $feed->link;
-        $feed_data[$time_created_at]['username'] = $instaUserName;
-        $feed_data[$time_created_at]['text'] = '';
-        $feed_data[$time_created_at]['created_at'] = date('Y-m-d', $feed->created_time);
-        $feed_data[$time_created_at]['image'] = $feed->images->thumbnail->url;
-        $feed_data[$time_created_at]['profile_image'] = '';
-      }
-    }
-
-    krsort($feed_data);
-
-    //After krsort, rename key value
-    $index = 0;
-    foreach($feed_data as $key => $item){
-      $new_feed_data[$post->ID][$index] = $item;
-      $index++;
-    }
   }
+
 
   return $new_feed_data;
 }
