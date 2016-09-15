@@ -23,11 +23,15 @@ class MusicSampler {
   }
 
   function check_sample_musics() {
-    $this->debug('init');
     $uploadDir = wp_upload_dir()['basedir'];
     $files = $this->rsearch($uploadDir . '/woocommerce_uploads', '#^.+?\.mp3$#');
     foreach($files as $file){
+      /*$detectedEncoding = mb_detect_encoding(basename($file));
+      if($detectedEncoding != 'ASCII' || $detectedEncoding != 'UTF-8'){
+          $file = iconv('EUC-KR', 'UTF-8', $file);
+      }*/
       $sampleFile = $uploadDir . str_replace('.mp3' ,'-sample.mp3' ,str_replace($uploadDir . '/woocommerce_uploads' , '' , $file));
+
       if(!file_exists($sampleFile)){
         $this->createSampleFile($file, $sampleFile);
       }
@@ -40,10 +44,10 @@ class MusicSampler {
       mkdir(dirname($sampleFile));
     }
 
-    copy($file, $sampleFile);
+    @copy($file, $sampleFile);
 
     $mp3 = new mp3;
-    $this->debug($mp3->cut_mp3($sampleFile, $sampleFile, 0, 30, 'second', false));
+    $mp3->cut_mp3($sampleFile, $sampleFile, 0, 30, 'second', false);
 
   }
 
@@ -69,7 +73,7 @@ class MusicSampler {
   }
 
   function debug($str){
-    file_put_contents(__DIR__ . '/debug.txt', $str."\r", FILE_APPEND);
+    file_put_contents(__DIR__ . '/debug.txt', chr(239) . chr(187) . chr(191) . $str."\r", FILE_APPEND);
   }
 
 }

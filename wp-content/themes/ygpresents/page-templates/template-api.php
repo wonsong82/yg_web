@@ -36,24 +36,76 @@ $method = substr(trim($requestedUri), 5);
 
 require_once (ABSPATH.'wp-content/plugins/ygpresent/class/EmailSubscriber.php');
 
+
+if(strstr($method, 'generateCache')){
+  $postType = $_GET['type'];
+  generateCache($postType);
+  exit;
+}
+
+
 if(function_exists($method)){
 
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $params = json_decode(file_get_contents('php://input'), true);
     $data = $method($params);
+    setResponseHeader(200);
+    header('Content-type: application/json');
+    echo json_encode($data);
+
   }else{
-    $data = $method();
+    // load it from cache
+    $cacheFile = ABSPATH . '/wp-cache/' . $method . '.json';
+
+    if(file_exists($cacheFile)){
+      setResponseHeader(200);
+      header('Content-type: application/json');
+      echo file_get_contents($cacheFile);
+    }
+
+    else {
+      // generate and return
+      $data = $method();
+      header('Content-type: application/json');
+      echo json_encode($data);
+    }
   }
 
-  setResponseHeader(200);
-  header('Content-type: application/json');
-  echo json_encode($data);
+
 
 }else{
   setResponseHeader(404);
   echo json_encode(null);
 }
 
+
+function generateCache($postType){
+  $cacheDir = ABSPATH . '/wp-cache';
+  if(!is_dir($cacheDir)) mkdir($cacheDir);
+
+  switch($postType){
+    case 'artist':
+      file_put_contents($cacheDir . '/getArtists.json', json_encode(getArtists()));
+    break;
+    case 'event':
+      file_put_contents($cacheDir . '/getEvents.json', json_encode(getEvents()));
+    break;
+    case 'tour':
+      file_put_contents($cacheDir . '/getTours.json', json_encode(getTours()));
+    break;
+    case 'album':
+      file_put_contents($cacheDir . '/getMusics.json', json_encode(getMusics()));
+    break;
+    case 'blog':
+      file_put_contents($cacheDir . '/getBlogs.json', json_encode(getBlogs()));
+    break;
+    case 'product':
+      file_put_contents($cacheDir . '/getMusics.json', json_encode(getMusics()));
+      file_put_contents($cacheDir . '/getShops.json', json_encode(getShops()));
+    break;
+    default:
+  }
+}
 
 
 function getProductsInCart(){
