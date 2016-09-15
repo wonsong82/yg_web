@@ -26,7 +26,7 @@ require __DIR__ . '/inc/header.php';
                     <li><a href="'.$home_url.'/my-account/edit-account">Profile</a></li>
                     <li><a href="'.$home_url.'/my-orders">My Order</a></li>
                     <li><a href="'.$home_url.'/my-account">My Address</a></li>
-                    <li><a href="'.$home_url.'/wp-login.php?loggedout=true">log out</a></li>  
+                    <li><a href="'.$home_url.'/customer-logout">log out</a></li>  
                 </ul>
             </div>
           </div>';

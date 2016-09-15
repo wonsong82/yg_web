@@ -194,6 +194,7 @@ if ( is_admin() ) {
 
 
 function shortcode_my_orders( $atts ) {
+
     extract( shortcode_atts( array(
         'order_count' => -1
     ), $atts ) );
@@ -205,7 +206,7 @@ function shortcode_my_orders( $atts ) {
     ) );
     return ob_get_clean();
 }
-add_shortcode('my_orders', 'shortcode_my_orders');
+add_shortcode('my_orders_yg', 'shortcode_my_orders');
 
 
 
