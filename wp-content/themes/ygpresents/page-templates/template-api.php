@@ -329,25 +329,26 @@ function getEvents(){
 	]);
 
 	$event_data = array();
-  $event_order = array();
+    $event_order = array();
 
 	foreach($event_posts as $key => $post){
 		$fields = get_fields($post->ID);
-    $postId = $post->ID;
+        $postId = $post->ID;
 
-    array_push($event_order, $postId);
+        array_push($event_order, $postId);
 
-    $event_data['events'][$postId]['id'] = $post->ID;
-    $event_data['events'][$postId]['post_title'] = $post->post_title;
-    $event_data['events'][$postId]['post_content'] = stripTags($post->post_content);
-    $event_data['events'][$postId]['post_date'] = convertDateFormat($post->post_date);
-    $event_data['events'][$postId]['main_image'] = $fields['main_image'];
-    $event_data['events'][$postId]['thumb_1x1'] = $fields['thumbnail'];
-    $event_data['events'][$postId]['thumb_3x2'] = $fields['thumbnail_3x2'];
-    $event_data['events'][$postId]['excerpt'] = $fields['short_description'];
-    $event_data['events'][$postId]['url_friendly_name'] = getFriendlyUrl('/event/', $post);
-    $event_data['events'][$postId]['artist_id'] = $fields['artist'][0];
-    $event_data['events'][$postId]['related_event'] = $fields['related_event'] ?: [];
+        $event_data['events'][$postId]['id'] = $post->ID;
+        $event_data['events'][$postId]['post_title'] = $post->post_title;
+        $event_data['events'][$postId]['post_content'] = stripTags($post->post_content);
+        $event_data['events'][$postId]['post_date'] = convertDateFormat($post->post_date);
+        $event_data['events'][$postId]['main_image'] = $fields['main_image'];
+        $event_data['events'][$postId]['thumb_1x1'] = $fields['thumbnail'];
+        $event_data['events'][$postId]['thumb_3x2'] = $fields['thumbnail_3x2'];
+        $event_data['events'][$postId]['excerpt'] = $fields['short_description'];
+        $event_data['events'][$postId]['url_friendly_name'] = getFriendlyUrl('/event/', $post);
+
+        $event_data['events'][$postId]['artist_id'] = $fields['artist'];
+        $event_data['events'][$postId]['related_event'] = $fields['related_event'] ?: [];
 	}
 
 	$event_data['event_order'] = $event_order;
@@ -599,10 +600,6 @@ function getShops(){
 
           //Get All Attributes this product used along with sort ordering
           $all_attributes = $plan->get_attributes();
-
-//              $fabric_values = get_the_terms( $post->ID, $attr['name']);
-
-
             $att_temp = array();
           foreach($all_attributes as $attr){
 
@@ -629,7 +626,7 @@ function getShops(){
             $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
             $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $variation['display_price'];
             $shop_data['products'][$post->ID]['variation'][$k]['sku'] = $variation['sku'];
-
+            $shop_data['products'][$post->ID]['variation'][$k]['image'] = $variation['image_src'];
 
             $attributes = $variation['attributes'];
 
