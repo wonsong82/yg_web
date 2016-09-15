@@ -14,15 +14,15 @@ require __DIR__ . '/inc/header.php';
 <div class="StaticPage">
 
   <article class="static-content <?php echo $post->post_name;?>">
-  <?php the_content(); ?>
   <?php
-  $pages = array("my-account","my-orders");
+  $pagestolook = array("my-account","my-orders");
   $home_url = get_home_url();
-  if(in_array($post->post_name, $pages) ){
+  if(in_array($post->post_name, $pagestolook) ){
     echo '<div class="menu-bar">
             <div class="menu-title">My Account</div>
             <div class="menu-body">
                 <ul>
+                    <li><a href="'.$home_url.'/my-account">Overview</a></li>
                     <li><a href="'.$home_url.'/my-account/edit-account">Profile</a></li>
                     <li><a href="'.$home_url.'/my-orders">My Order</a></li>
                     <li><a href="'.$home_url.'/my-account">My Address</a></li>
@@ -31,6 +31,9 @@ require __DIR__ . '/inc/header.php';
             </div>
           </div>';
   }
+
+
+  the_content();
   ?>
   </article>
 
