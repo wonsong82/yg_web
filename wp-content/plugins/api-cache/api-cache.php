@@ -23,6 +23,7 @@ class YGAPICache {
     global $post;
     $siteUrl = get_site_url();
     $ch = curl_init();
+    if($post)
     if(in_array($post->post_type, ['artist', 'event', 'tour', 'album', 'blog', 'product'])) {
       curl_setopt($ch, CURLOPT_URL, $siteUrl . '/api/generateCache?' . 'type=' . $post->post_type);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

@@ -22,11 +22,11 @@ require __DIR__ . '/inc/header.php';
             <div class="menu-title">My Account</div>
             <div class="menu-body">
                 <ul>
-                    <li><a href="'.$home_url.'/my-account">Overview</a></li>
-                    <li><a href="'.$home_url.'/my-account/edit-account">Profile</a></li>
+                    <li><a href="'.$home_url.'/my-account">Dashboard</a></li>
+                    <li><a href="'.$home_url.'/my-account/edit-account">Edit Profile</a></li>
                     <li><a href="'.$home_url.'/my-orders">My Order</a></li>
                     <li><a href="'.$home_url.'/my-account">My Address</a></li>
-                    <li><a href="'.$home_url.'/customer-logout">log out</a></li>  
+                    <li><a href="'.$home_url.'/customer-logout">Log Out</a></li>  
                 </ul>
             </div>
           </div>';

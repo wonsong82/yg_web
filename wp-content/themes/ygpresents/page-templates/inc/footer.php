@@ -7,7 +7,7 @@ $staticJS = file_exists(ABSPATH . 'static/static-page.js') ?
   '<script src="/static/static-page.css"></script>' : '';
 
 $staticPageJS = file_exists(ABSPATH . "static/static-{$postName}.js") ?
-  '<script href="/static/static-' . $postName . '.js"></script>' : '';
+  '<script src="/static/static-' . $postName . '.js"></script>' : '';
 
 ?>
 <div id="root">
