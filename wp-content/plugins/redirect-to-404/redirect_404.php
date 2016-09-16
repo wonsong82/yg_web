@@ -77,7 +77,7 @@ public function PRT_redirect_404() {
 			echo '<script> var template="'.get_template().'";</script>'; 
 			wp_enqueue_script( 'prfx_script', $dir[0] . '/' . $src,'','',true );}
 			
-			add_options_page("404 Redirect", "404 Redirect", 1, "redirect-404", array( $this,"PRT_redirect_404_admin"));
+			add_options_page("404 Redirect", "404 Redirect", 'administrator', "redirect-404", array( $this,"PRT_redirect_404_admin"));
 		}
 		
 		 function PRT_redirect_404_admin() {
