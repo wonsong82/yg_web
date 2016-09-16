@@ -56,7 +56,6 @@ if(function_exists($method)){
   }else{
     // load it from cache
     $cacheFile = ABSPATH . '/wp-cache/' . $method . '.json';
-
     if(file_exists($cacheFile)){
       setResponseHeader(200);
       header('Content-type: application/json');
@@ -513,16 +512,23 @@ function getMusics(){
     /** HOT TRACK DATA */
 
     $hot_tracks = get_option('sub_hot_track_enable');
+    $hot_tracks_order = array_filter(get_option('sub_hot_track_order'));
+
+    asort($hot_tracks_order);
+
     $index = 0;
 
-    if(count($hot_tracks) > 0 && $hot_tracks != null){
-        foreach($hot_tracks as $key => $value){
-            $album_data['hotTracks'][$index] = $key;
-            $index++;
+    if(count($hot_tracks_order) > 0 && $hot_tracks_order != null) {
+        foreach ($hot_tracks_order as $key => $value) {
+            if (key_exists($key, $hot_tracks)) {
+                $album_data['hotTracks'][$index] = $key;
+                $index++;
+            }
         }
     }else{
         $album_data['hotTracks'] = [];
     }
+    
     return $album_data;
 }
 
@@ -1017,6 +1023,57 @@ function getTweets($username, $count){
 
   return $data;
 }
+
+
+function reserializePath(){
+
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    foreach($music_posts as $post){
+
+        $before_url = 'ygpresents.testroo.com';
+        $after_url  = 'yg.testroo.com';
+
+
+        //Array Return from serialized string
+        $music_field = get_post_meta($post->ID, '_downloadable_files');
+
+        $new_array = array();
+
+        $is_update_required = false;
+
+        if(count($music_field[0]) > 0 ){
+            foreach($music_field as $field){
+                foreach($field as $y => $item){
+                    $new_array[$y]['name'] = $item['name'];
+
+                    //Only when OLD address exist, it tries to update
+                    if(strpos($item['file'], 'ygpresents.testroo.com')){
+                        $new_array[$y]['file'] = str_replace($before_url, $after_url, $item['file']) ;
+                        $is_update_required = true;
+                    }
+                }
+            }
+
+            if($is_update_required){
+                //Serialized data will be stored with array parameter
+                update_post_meta($post->ID, '_downloadable_files', $new_array);
+            }
+        }
+    }
+}
+
+
 
 
 function convertDateFormat($date){
