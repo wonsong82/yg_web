@@ -1019,6 +1019,57 @@ function getTweets($username, $count){
 }
 
 
+function reserializePath(){
+
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    foreach($music_posts as $post){
+
+        $before_url = 'ygpresents.testroo.com';
+        $after_url  = 'yg.testroo.com';
+
+
+        //Array Return from serialized string
+        $music_field = get_post_meta($post->ID, '_downloadable_files');
+
+        $new_array = array();
+
+        $is_update_required = false;
+
+        if(count($music_field[0]) > 0 ){
+            foreach($music_field as $field){
+                foreach($field as $y => $item){
+                    $new_array[$y]['name'] = $item['name'];
+
+                    //Only when OLD address exist, it tries to update
+                    if(strpos($item['file'], 'ygpresents.testroo.com')){
+                        $new_array[$y]['file'] = str_replace($before_url, $after_url, $item['file']) ;
+                        $is_update_required = true;
+                    }
+                }
+            }
+
+            if($is_update_required){
+                //Serialized data will be stored with array parameter
+                update_post_meta($post->ID, '_downloadable_files', $new_array);
+            }
+        }
+    }
+}
+
+
+
+
 function convertDateFormat($date){
   return date("Y-m-d", strtotime($date));
 }
