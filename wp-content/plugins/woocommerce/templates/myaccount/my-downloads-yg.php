@@ -19,8 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 ?>
-<div class="static-content-title">My Downloads</div>
+<div class="woocommerce">
+	<div class="static-content-title">My Downloads</div>
 
-<?php do_action( 'woocommerce_before_my_account' ); ?>
-<?php wc_get_template( 'myaccount/my-downloads.php' ); ?>
-<?php do_action( 'woocommerce_after_my_account' ); ?>
+	<?php do_action( 'woocommerce_before_my_account' ); ?>
+	<?php wc_get_template( 'myaccount/my-downloads.php' ); ?>
+	<?php do_action( 'woocommerce_after_my_account' ); ?>
+
+</div>

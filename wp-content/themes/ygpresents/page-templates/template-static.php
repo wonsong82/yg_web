@@ -13,11 +13,11 @@ require __DIR__ . '/inc/header.php';
 
 <div class="StaticPage">
 
-  <article class="static-content <?php echo $post->post_name;?>">
+  <article class="static-content <?php echo $postName;?>">
   <?php
   $pagestolook = array("my-account","my-orders","my-downloads");
   $home_url = get_home_url();
-  if(in_array($post->post_name, $pagestolook) ){
+  if(in_array($postName, $pagestolook) ){
     $yg_cur = ygGetCurrentPage();
     ?>
 
@@ -28,7 +28,8 @@ require __DIR__ . '/inc/header.php';
               <li><a href="<?php echo $home_url?>/my-account"<?php echo $yg_cur=='dashboard'?' class="active"':''?>>Dashboard</a></li>
               <li><a href="<?php echo $home_url?>/my-account/edit-account"<?php echo $yg_cur=='profile'?' class="active"':''?>>Edit Profile</a></li>
               <li><a href="<?php echo $home_url?>/my-account/edit-address"<?php echo $yg_cur=='address'?' class="active"':''?>>My Address</a></li>
-              <li><a href="<?php echo $home_url?>/my-orders"<?php echo $yg_cur=='order'?' class="active"':''?>>My Order</a></li>
+              <li><a href="<?php echo $home_url?>/my-orders"<?php echo $yg_cur=='order'?' class="active"':''?>>My Orders</a></li>
+              <li><a href="<?php echo $home_url?>/my-downloads"<?php echo $yg_cur=='download'?' class="active"':''?>>My Downloads</a></li>
               <li><a href="<?php echo $home_url?>/customer-logout">Log Out</a></li>
           </ul>
       </div>
@@ -57,6 +58,9 @@ function ygGetCurrentPage(){
   }
   else if(preg_match('#/my-orders$#', $uri)){
     return 'order';
+  }
+  else if(preg_match('#/my-downloads#', $uri)){
+    return 'download';
   }
   else if(preg_match('#/my-account/view-order/#', $uri)){
     return 'order';
