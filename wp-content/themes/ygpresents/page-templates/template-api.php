@@ -4,13 +4,6 @@
  *
  */
 
-//define('DEBUG', true);
-//dd('API');
-//dd('<pre>', true);
-
-
-
-
 $args = array(
 	'sort_order' => 'asc',
 	'sort_column' => 'post_title',
@@ -237,26 +230,32 @@ function newsletterSignup($data){
 
 // 2th DONE -------------- 8/15/2016
 function getArtists(){
-
     $artist_posts = get_posts([
         'post_type' => 'artist',
         'post_status' => 'publish',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'ASC'
     ]);
 
     $artist_data = array();
+    $artist_order = array();
 
     foreach($artist_posts as $key => $post){
         $fields = get_fields($post->ID);
 
-        $artist_data[$post->ID]['id'] = $post->ID;
-        $artist_data[$post->ID]['name'] = $fields['artist_name'];
-        $artist_data[$post->ID]['urlFriendlyName'] = getFriendlyUrl('/artist/', $post);
-        $artist_data[$post->ID]['bg'] = $fields['artist_image'];
-        $artist_data[$post->ID]['themeColor'] = $fields['theme_color'];
-        $artist_data[$post->ID]['textColor'] = $fields['font_color'];
-        $artist_data[$post->ID]['twitter_username'] = $fields['twitter_username'];
+        array_push($artist_order, $post->ID);
+
+        $artist_data['artists'][$post->ID]['id'] = $post->ID;
+        $artist_data['artists'][$post->ID]['name'] = $fields['artist_name'];
+        $artist_data['artists'][$post->ID]['urlFriendlyName'] = getFriendlyUrl('/artist/', $post);
+        $artist_data['artists'][$post->ID]['bg'] = $fields['artist_image'];
+        $artist_data['artists'][$post->ID]['themeColor'] = $fields['theme_color'];
+        $artist_data['artists'][$post->ID]['textColor'] = $fields['font_color'];
+        $artist_data['artists'][$post->ID]['twitter_username'] = $fields['twitter_username'];
     }
+
+    $artist_data['artists_order'] = $artist_order;
 
     return $artist_data;
 }
@@ -274,7 +273,7 @@ function getTours(){
 	]);
 
 	$tour_data = array();
-  $tour_order = array();
+    $tour_order = array();
 
 	foreach($tour_posts as $key => $post){
 		$fields = get_fields($post->ID);
