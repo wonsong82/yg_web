@@ -32,11 +32,22 @@ if( !class_exists( 'PRT_redirect_404' ) ) {
 		 */
 		public $setting_options;
 
+
+
+        public $exception_urls_not_to_redirect = [
+            '/admin'
+        ];
+
+
+
 		/**
 		 * Private constructor prevents construction outside this class.
 	 	 */
 		Private function __construct() {
  		}
+
+
+
 
  		public static function getInstance() {
 			 if ( !isset( self::$instance ) ) {
@@ -96,22 +107,27 @@ public function PRT_redirect_404() {
 		
 	function PRT_redirect_404_to_url()
 	{
-		
-		
-		if(is_404()) 
+
+		if(is_404())
 		{
-			
 			$link = self::currentURL();
+            $curUri = $_SERVER['REQUEST_URI'];
+
+            if(in_array($curUri, $this->exception_urls_not_to_redirect))
+            {
+                return;
+            }
+
 			if($link == get_option('PRT_redirect_404_pageUrl'))
 			{
 				echo "<b>All 404 Redirect to Homepage</b> has detected that the target URL is invalid, this will cause an infinite loop redirection, please go to the plugin settings and correct the traget link! ";
-				exit(); 
+				exit();
 			}
-			
+
 			if(get_option('PRT_redirect_404_status')=='1' & get_option('PRT_redirect_404_pageUrl')!=''){
 				header ('HTTP/1.1 301 Moved Permanently');
 				header ("Location: " . get_option('PRT_redirect_404_pageUrl'));
-				exit(); 
+				exit();
 			}
 		}
 	}
