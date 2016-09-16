@@ -17,18 +17,28 @@ class YGAPICache {
     register_activation_hook( __FILE__, [$this, 'activate'] );
     register_deactivation_hook( __FILE__, [$this, 'deactivate'] );
     add_action('save_post', [$this, 'generateCache'] );
+
   }
 
   function generateCache(){
     global $post;
+
+    $postType = $post ? $post->post_type : null;
     $siteUrl = get_site_url();
     $ch = curl_init();
-    if(isset($post->post_type)) {
-      if (in_array($post->post_type, ['artist', 'event', 'tour', 'album', 'blog', 'product'])) {
-        curl_setopt($ch, CURLOPT_URL, $siteUrl . '/api/generateCache?' . 'type=' . $post->post_type);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_exec($ch);
-      }
+
+
+    //Check if quick-edit
+    if($postType == null){
+        if(strpos($_SERVER['HTTP_REFERER'], 'post_type')){
+            $postType  = explode("=", explode("?", $_SERVER['HTTP_REFERER'])[1])[1];
+        }
+    }
+
+    if(in_array($postType, ['artist', 'event', 'tour', 'album', 'blog', 'product'])) {
+      curl_setopt($ch, CURLOPT_URL, $siteUrl . '/api/generateCache?' . 'type=' . $postType);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_exec($ch);
     }
   }
 

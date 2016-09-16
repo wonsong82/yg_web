@@ -457,6 +457,8 @@ function getMusics(){
         'post_type' => 'product',
         'post_status' => 'publish',
         'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'ASC',
         'meta_query' => array(
             array(
                 'key' => '_downloadable',
@@ -465,12 +467,16 @@ function getMusics(){
         )
     ]);
 
+    $music_order = array();
+
     foreach($music_posts as $music_post){
 
         $music_fields = get_post_meta($music_post->ID);
         $music_custom_fields = get_fields($music_post->ID);
 
         if($music_custom_fields['album'] == null) continue;
+
+        array_push($music_order, $music_post->ID);
 
         $album_data['musics'][$music_post->ID]['id'] = $music_post->ID;
         $album_data['musics'][$music_post->ID]['post_title'] = $music_post->post_title;
@@ -508,6 +514,8 @@ function getMusics(){
         $album_data['musics'][$music_post->ID]['product_type'] = $music_custom_fields['music_product_type'];
 
     }
+
+    $album_data['musics_order'] = $music_order;
 
     /** HOT TRACK DATA */
 
