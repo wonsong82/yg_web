@@ -209,6 +209,16 @@ function shortcode_my_orders( $atts ) {
 add_shortcode('my_orders_yg', 'shortcode_my_orders');
 
 
+function shortcode_my_downloads( $atts ) {
+
+  ob_start();
+  wc_get_template( 'myaccount/my-downloads-yg.php' );
+  return ob_get_clean();
+}
+add_shortcode('my_downloads_yg', 'shortcode_my_downloads');
+
+
+
 
 /** woocommerce action */
 //add_action( 'woocommerce_product_options_downloads', 'wc_rrp_product_field' );

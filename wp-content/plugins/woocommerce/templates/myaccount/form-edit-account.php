@@ -22,14 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <?php wc_print_notices(); ?>
 <div id="profile-form">
-<div class="profile-menu">
-	<li>
-		Profile
-	</li>
-	<li>My Order</li>
-	<li>My Address</li>
-	<li>logout</li>
-</div>
 
 <form class="edit-account" action="" method="post">
 	<div class="static-content-title" id="profile">Profile</div>
@@ -70,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php do_action( 'woocommerce_edit_account_form' ); ?>
 
-	<p>
+	<p class="controls">
 		<?php wp_nonce_field( 'save_account_details' ); ?>
 		<input type="submit" class="button yg-button-black" name="save_account_details" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>" />
 		<input type="hidden" name="action" value="save_account_details" />

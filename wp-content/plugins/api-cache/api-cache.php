@@ -27,6 +27,7 @@ class YGAPICache {
     $siteUrl = get_site_url();
     $ch = curl_init();
 
+
     //Check if quick-edit
     if($postType == null){
         if(strpos($_SERVER['HTTP_REFERER'], 'post_type')){

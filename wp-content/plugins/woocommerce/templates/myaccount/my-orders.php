@@ -36,10 +36,13 @@ $customer_orders = get_posts( apply_filters( 'woocommerce_my_account_my_orders_q
 	'post_type'   => wc_get_order_types( 'view-orders' ),
 	'post_status' => array_keys( wc_get_order_statuses() )
 ) ) );
+?>
 
-if ( $customer_orders ) : ?>
+<div class="static-content-body">
 
-	<h2><?php echo apply_filters( 'woocommerce_my_account_my_orders_title', __( 'Recent Orders', 'woocommerce' ) ); ?></h2>
+<?php if ( $customer_orders ) : ?>
+
+	<h2 class="static-content-h2"><?php echo apply_filters( 'woocommerce_my_account_my_orders_title', __( 'Recent Orders', 'woocommerce' ) ); ?></h2>
 
 	<table class="shop_table shop_table_responsive my_account_orders">
 
@@ -114,4 +117,9 @@ if ( $customer_orders ) : ?>
 			<?php endforeach; ?>
 		</tbody>
 	</table>
+
 <?php endif; ?>
+
+
+
+</div>
