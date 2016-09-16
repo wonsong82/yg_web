@@ -56,7 +56,6 @@ if(function_exists($method)){
   }else{
     // load it from cache
     $cacheFile = ABSPATH . '/wp-cache/' . $method . '.json';
-
     if(file_exists($cacheFile)){
       setResponseHeader(200);
       header('Content-type: application/json');
@@ -513,16 +512,23 @@ function getMusics(){
     /** HOT TRACK DATA */
 
     $hot_tracks = get_option('sub_hot_track_enable');
+    $hot_tracks_order = array_filter(get_option('sub_hot_track_order'));
+
+    asort($hot_tracks_order);
+
     $index = 0;
 
-    if(count($hot_tracks) > 0 && $hot_tracks != null){
-        foreach($hot_tracks as $key => $value){
-            $album_data['hotTracks'][$index] = $key;
-            $index++;
+    if(count($hot_tracks_order) > 0 && $hot_tracks_order != null) {
+        foreach ($hot_tracks_order as $key => $value) {
+            if (key_exists($key, $hot_tracks)) {
+                $album_data['hotTracks'][$index] = $key;
+                $index++;
+            }
         }
     }else{
         $album_data['hotTracks'] = [];
     }
+    
     return $album_data;
 }
 
