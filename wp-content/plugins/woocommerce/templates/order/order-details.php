@@ -24,7 +24,7 @@ $order = wc_get_order( $order_id );
 $show_purchase_note    = $order->has_status( apply_filters( 'woocommerce_purchase_note_order_statuses', array( 'completed', 'processing' ) ) );
 $show_customer_details = is_user_logged_in() && $order->get_user_id() === get_current_user_id();
 ?>
-<h2><?php _e( 'Order Details', 'woocommerce' ); ?></h2>
+<h1 class="static-content-title"><?php _e( 'Order Details', 'woocommerce' ); ?></h1>
 <table class="shop_table order_details">
 	<thead>
 		<tr>
@@ -69,3 +69,7 @@ $show_customer_details = is_user_logged_in() && $order->get_user_id() === get_cu
 <?php if ( $show_customer_details ) : ?>
 	<?php wc_get_template( 'order/order-details-customer.php', array( 'order' =>  $order ) ); ?>
 <?php endif; ?>
+
+<div class="controls">
+	<a class="button" href="<?php echo get_home_url()?>/my-orders">Go Back</a>
+</div>
