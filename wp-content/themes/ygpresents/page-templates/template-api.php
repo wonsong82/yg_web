@@ -311,6 +311,9 @@ function getTours(){
         $begin = '';
         $end = '';
 
+        //** Issue Fix - cuz schedule created with bad order, no calendar has benn generated. re-ordered by date
+        asort($fields['tour_schedule']);
+
         foreach($fields['tour_schedule'] as $schedule){
 
             $tour_date = convertDateFormat($schedule['tour_date']);
