@@ -311,6 +311,9 @@ function getTours(){
         $begin = '';
         $end = '';
 
+        //** Issue Fix - cuz schedule created with bad order, no calendar has benn generated. re-ordered by date
+        asort($fields['tour_schedule']);
+
         foreach($fields['tour_schedule'] as $schedule){
 
             $tour_date = convertDateFormat($schedule['tour_date']);
@@ -528,7 +531,9 @@ function getMusics(){
     if(count($hot_tracks_order) > 0 && $hot_tracks_order != null) {
         foreach ($hot_tracks_order as $key => $value) {
             if (key_exists($key, $hot_tracks)) {
-                $album_data['hotTracks'][$index] = $key;
+                if(in_array($key, $music_order)){
+                    $album_data['hotTracks'][$index][] = $key;
+                }
                 $index++;
             }
         }
@@ -1155,5 +1160,72 @@ function setResponseHeader($code){
 	header("{$protocol} {$code} {$text}");
 	$GLOBALS['http_response_code'] = $code;
 }
+
+
+
+
+
+
+
+
+
+
+
+/** Issue Tracker to find issues */
+
+function musicProductsWithNoAlbumsSelect(){
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'ASC',
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+    $ret = array();
+
+    foreach($music_posts as $music_post){
+        $music_custom_fields = get_fields($music_post->ID);
+
+        if($music_custom_fields['album'] == null) {
+            array_push($ret, $music_post->ID);
+        }
+    }
+    return $ret;
+}
+
+
+function musicProductsWithNoDownloadableFile(){
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'ASC',
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    $ret = array();
+
+    foreach($music_posts as $music_post){
+        $music_field = get_post_meta($music_post->ID, '_downloadable_files');
+        if(count($music_field[0]) == 0){
+            array_push($ret, $music_post->ID);
+        }
+
+    }
+    return $ret;
+}
+
 
 
