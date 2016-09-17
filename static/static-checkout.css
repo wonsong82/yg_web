@@ -1,3 +1,16 @@
+body {
+    background: #f0f0f0;
+    font-weight: 400;
+    position: relative;
+    font-family: 'Klavika', sans-serif;
+}
+span {
+    vertical-align: top;
+}
+#wpadminbar {
+    display: none;
+}
+
 .App .Page .Static {
     width: auto;
 }
@@ -12,9 +25,6 @@
     border-left:none !important;
 }
 
-.App .Page .Static .static-content .woocommerce form .form-row {
-    margin-bottom: 5px;
-}
 
 .App .Page .Static .static-content .woocommerce p, .App .Page .Static .static-content .woocommerce address{
     margin-bottom: 5px;
@@ -26,7 +36,7 @@
     float: inherit;
 }
 
-.App .Page .Static .static-content .woocommerce form .form-row.form-row-first, .App .Page .Static .static-content .woocommerce form .form-row.form-row-last{
+.App .Page .Static .static-content.checkout .form-row-first, .App .Page .Static .static-content.checkout .form-row-last{
     margin-left : 0px;
 }
 
@@ -40,7 +50,7 @@
 }
 
 #root > div > div.Page {
-    padding:0px;
+    background: transparent;
 }
 
 #content > div.page-header  {
@@ -53,9 +63,6 @@
     display:none !important;
 }
 
-.App .Page .Static .static-content .woocommerce .shop_table{
-    display:block;
-}
 
 
 #add_payment_method #payment ul.payment_methods, .woocommerce-checkout #payment ul.payment_methods,
@@ -69,4 +76,10 @@
 article{
     padding-bottom: 100px;
 
+}
+.Footer .EmailSignup input {
+    box-sizing: content-box;
+}
+.Footer .EmailSignup button {
+    padding: 0;
 }

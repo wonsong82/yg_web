@@ -34,28 +34,32 @@ if ( $order ) : ?>
 
 	<?php else : ?>
 
-		<p class="woocommerce-thankyou-order-received"><?php echo apply_filters( 'woocommerce_thankyou_order_received_text', __( 'Thank you. Your order has been received.', 'woocommerce' ), $order ); ?></p>
+		<p class="woocommerce-thankyou-order-received"><b><?php echo apply_filters( 'woocommerce_thankyou_order_received_text', __( 'Thank you. Your order has been received.', 'woocommerce' ), $order ); ?></b></p>
 
-		<ul class="woocommerce-thankyou-order-details order_details">
-			<li class="order">
-				<?php _e( 'Order Number:', 'woocommerce' ); ?>
-				<strong><?php echo $order->get_order_number(); ?></strong>
-			</li>
-			<li class="date">
-				<?php _e( 'Date:', 'woocommerce' ); ?>
-				<strong><?php echo date_i18n( get_option( 'date_format' ), strtotime( $order->order_date ) ); ?></strong>
-			</li>
-			<li class="total">
-				<?php _e( 'Total:', 'woocommerce' ); ?>
-				<strong><?php echo $order->get_formatted_order_total(); ?></strong>
-			</li>
-			<?php if ( $order->payment_method_title ) : ?>
-			<li class="method">
-				<?php _e( 'Payment Method:', 'woocommerce' ); ?>
-				<strong><?php echo $order->payment_method_title; ?></strong>
-			</li>
-			<?php endif; ?>
-		</ul>
+		<table class="order-recap">
+			<thead>
+				<tr>
+					<th><?php _e( 'Order Number:', 'woocommerce' ); ?></th>
+					<th><?php _e( 'Date:', 'woocommerce' ); ?></th>
+					<th><?php _e( 'Total:', 'woocommerce' ); ?></th>
+					<?php if ( $order->payment_method_title ) : ?>
+					<th><?php _e( 'Payment Method:', 'woocommerce' ); ?></th>
+					<?php endif; ?>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>#<?php echo $order->get_order_number(); ?></td>
+					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $order->order_date ) ); ?></td>
+					<td><?php echo $order->get_formatted_order_total(); ?></td>
+					<?php if ( $order->payment_method_title ) : ?>
+					<td><?php echo $order->payment_method_title; ?></td>
+					<?php endif;?>
+				</tr>
+			</tbody>
+		</table>
+
+
 		<div class="clear"></div>
 
 	<?php endif; ?>

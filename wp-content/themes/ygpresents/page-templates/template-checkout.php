@@ -17,13 +17,12 @@ $estore_layout = estore_layout_class();
     <div id="content" class="site-content" ><!-- #content.site-content -->
       <div class="page-header clearfix" style="">
         <div class="tg-container">
-          <?php the_title('<h2 class="entry-title">', '</h2>'); ?>
+          <?php the_title('<h2 class="static-content-title">', '</h2>'); ?>
           <h3 class="entry-sub-title"><?php estore_breadcrumbs(); ?></h3>
         </div>
       </div>
       <div id="main" class="clearfix <?php echo esc_attr($estore_layout); ?>">
         <div class="tg-container" >
-          <div id="primary">
             <?php
             while ( have_posts() ) : the_post(); ?>
 
@@ -38,8 +37,6 @@ $estore_layout = estore_layout_class();
     //          get_template_part('navigation', 'none');
 
             endwhile; // End of the loop. ?>
-          </div> <!-- Primary end -->
-          <?php estore_sidebar_select(); ?>
         </div>
       </div>
     </div>
