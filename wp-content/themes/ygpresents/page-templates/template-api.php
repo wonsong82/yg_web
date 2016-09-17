@@ -63,8 +63,6 @@ if(function_exists($method)){
     }
   }
 
-
-
 }else{
   setResponseHeader(404);
   echo json_encode(null);
@@ -797,27 +795,20 @@ function getPromotions(){
 
 
 function getFacebookPhotos(){
-  $access_token="1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY";
+    $access_token="1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY";
+    $fb_page_id = "BIGBANG";
 
-  //$fields="id,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time";
-  //$fb_page_id = "2NE1";
+    $url = "https://graph.facebook.com/".$fb_page_id."/posts?fields=id,picture,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time&access_token=". $access_token. "&limit=12&locale=en_US";
 
-  //$json_link = "https://graph.facebook.com/v2.3/{$fb_page_id}/albums?fields={$fields}&access_token={$access_token}";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+    $json = curl_exec($ch);
+    curl_close($ch);
 
-
-  //fields list
-  //https://developers.facebook.com/docs/graph-api/reference/v2.7/post/
-
-
-
-  $json_link = "https://graph.facebook.com/2NE1/posts?fields=id,picture,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time&access_token=1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY&limit=12&locale=en_US";
-
-  $json = file_get_contents($json_link);
-
-  $obj = json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
-
-
-  return $obj;
+    $data = (array) json_decode($json);
+    return $data;
 
 }
 
@@ -860,6 +851,7 @@ function getSocialFeeds(){
 
   $new_feed_data = [];
 
+    // Twitter Instagram
   if(false){
       foreach($artist_posts as $key => $post){
 
@@ -913,6 +905,18 @@ function getSocialFeeds(){
               $index++;
           }
       }
+  }
+
+  // Facebook
+  else{
+      foreach($artist_posts as $key => $post){
+          $fbUsername = get_field('facebook_username', $post->ID);
+
+
+      }
+
+
+
   }
 
 
@@ -1053,8 +1057,8 @@ function reserializePath(){
 
     foreach($music_posts as $post){
 
-        $before_url = 'ygpresents.testroo.com';
-        $after_url  = 'yg.testroo.com';
+        $before_url = 'yg.testroo.com';
+        $after_url  = 'ygpresents.com';
 
 
         //Array Return from serialized string
@@ -1070,7 +1074,7 @@ function reserializePath(){
                     $new_array[$y]['name'] = $item['name'];
 
                     //Only when OLD address exist, it tries to update
-                    if(strpos($item['file'], 'ygpresents.testroo.com')){
+                    if(strpos($item['file'], $before_url)){
                         $new_array[$y]['file'] = str_replace($before_url, $after_url, $item['file']) ;
                         $is_update_required = true;
                     }
