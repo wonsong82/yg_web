@@ -9,6 +9,7 @@ Description: YG Present
 
 require_once('class/promotion-settings.php' );
 require_once('yg-email-subscriber.php');
+require_once ('404-redirect.php');
 
 
 $email_subscribe_cur_version = '1.0';
