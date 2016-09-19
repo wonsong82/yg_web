@@ -36,6 +36,13 @@ if(strstr($method, 'generateCache')){
   exit;
 }
 
+if(strstr($method, 'generateCacheAll')){
+  foreach(['artist', 'event', 'tour', 'album', 'blog',' product'] as $type){
+    generateCache($type);
+  }
+  exit;
+}
+
 
 if(function_exists($method)){
 
