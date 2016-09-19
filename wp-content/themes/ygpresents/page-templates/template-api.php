@@ -794,11 +794,10 @@ function getPromotions(){
 }
 
 
-function getFacebookPhotos(){
+function getFacebookFeeds($fb_page_id){
     $access_token="1584941118480725|iTQQ_kX7d3kwwKODmTHv7Dz50dY";
-    $fb_page_id = "BIGBANG";
 
-    $url = "https://graph.facebook.com/".$fb_page_id."/posts?fields=id,picture,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time&access_token=". $access_token. "&limit=12&locale=en_US";
+    $url = "https://graph.facebook.com/".$fb_page_id."/posts?fields=id,full_picture,from,message,message_tags,story,story_tags,link,source,name,caption,description,type,status_type,object_id,created_time&access_token=". $access_token. "&limit=6&locale=en_US";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -911,12 +910,25 @@ function getSocialFeeds(){
   else{
       foreach($artist_posts as $key => $post){
           $fbUsername = get_field('facebook_username', $post->ID);
+          $fbFeeds = $fbUsername != null ? getFacebookFeeds($fbUsername) : [];
 
+          if($fbFeeds && count($fbFeeds) > 0) {
+              $index = 0;
+              foreach($fbFeeds['data'] as $feed){
+                  if($index == 5) break;
 
+                  $new_feed_data[$post->ID][$index]['type'] = 'facebook';
+                  $new_feed_data[$post->ID][$index]['artist_id'] = $post->ID;
+                  $new_feed_data[$post->ID][$index]['username'] = $fbUsername;
+                  $new_feed_data[$post->ID][$index]['text'] = isset($feed->message) ? $feed->message : $feed->description;
+                  $new_feed_data[$post->ID][$index]['image'] = isset($feed->full_picture) ? $feed->full_picture : null;
+                  $new_feed_data[$post->ID][$index]['url'] = isset($feed->link) ? $feed->link : null;
+                  $new_feed_data[$post->ID][$index]['created_at'] = isset($feed->created_time) ? convertDateFormat($feed->created_time) : null;
+
+                  $index++;
+              }
+          }
       }
-
-
-
   }
 
 
