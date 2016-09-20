@@ -27,7 +27,6 @@ class YGAPICache {
     $siteUrl = get_site_url();
     $ch = curl_init();
 
-
     //Check if quick-edit
     if($postType == null){
         if(strpos($_SERVER['HTTP_REFERER'], 'post_type')){
@@ -38,6 +37,7 @@ class YGAPICache {
     if(in_array($postType, ['artist', 'event', 'tour', 'album', 'blog', 'product'])) {
       curl_setopt($ch, CURLOPT_URL, $siteUrl . '/api/generateCache?' . 'type=' . $postType);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);      
       curl_exec($ch);
     }
   }

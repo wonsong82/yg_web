@@ -83,6 +83,7 @@ function generateCache($postType){
   switch($postType){
     case 'artist':
       file_put_contents($cacheDir . '/getArtists.json', json_encode(getArtists()));
+
     break;
     case 'event':
       file_put_contents($cacheDir . '/getEvents.json', json_encode(getEvents()));
