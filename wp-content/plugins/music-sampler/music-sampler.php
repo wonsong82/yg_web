@@ -23,6 +23,9 @@ class MusicSampler {
   }
 
   function check_sample_musics() {
+
+    set_time_limit(0);
+
     $uploadDir = wp_upload_dir()['basedir'];
     $files = $this->rsearch($uploadDir . '/woocommerce_uploads', '#^.+?\.mp3$#');
     foreach($files as $file){
