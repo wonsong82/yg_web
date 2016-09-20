@@ -29,17 +29,17 @@ $method = substr(trim($requestedUri), 5);
 
 require_once (ABSPATH.'wp-content/plugins/ygpresent/class/EmailSubscriber.php');
 
-
-if(strstr($method, 'generateCache')){
-  $postType = $_GET['type'];
-  generateCache($postType);
-  exit;
-}
-
 if(strstr($method, 'generateCacheAll')){
   foreach(['artist', 'event', 'tour', 'album', 'blog',' product'] as $type){
     generateCache($type);
   }
+  exit;
+}
+
+
+if(strstr($method, 'generateCache')){
+  $postType = $_GET['type'];
+  generateCache($postType);
   exit;
 }
 
