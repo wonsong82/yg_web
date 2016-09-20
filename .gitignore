@@ -34,6 +34,8 @@
 /*
 !wp-content/
 !static/
+static/app.css
+static/app.js
 !*.png
 !*.svg
 !*.ico
