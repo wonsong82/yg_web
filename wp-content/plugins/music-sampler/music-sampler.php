@@ -10,7 +10,7 @@ Text Domain: music-sampler
 Domain Path:
 License:
 */
-require_once __DIR__ . '/mp3/class.mp3.php';
+//require_once __DIR__ . '/mp3/class.mp3.php';
 
 class MusicSampler {
 
@@ -25,18 +25,20 @@ class MusicSampler {
   function check_sample_musics() {
     $uploadDir = wp_upload_dir()['basedir'];
     $files = $this->rsearch($uploadDir . '/woocommerce_uploads', '#^.+?\.mp3$#');
+
     foreach($files as $file){
-      /*$detectedEncoding = mb_detect_encoding(basename($file));
-      if($detectedEncoding != 'ASCII' || $detectedEncoding != 'UTF-8'){
-          $file = iconv('EUC-KR', 'UTF-8', $file);
-      }*/
+
       $sampleFile = $uploadDir . str_replace('.mp3' ,'-sample.mp3' ,str_replace($uploadDir . '/woocommerce_uploads' , '' , $file));
 
       if(!file_exists($sampleFile)){
-        $this->createSampleFile($file, $sampleFile);
+        $this->createSampleFileUsingFFMpeg($file, $sampleFile);
       }
     }
+  }
 
+  function createSampleFileUsingFFMpeg($src, $dest){
+    $cmd = "ffmpeg -i \"{$src}\" -ss 00:00:00 -acodec libmp3lame -t 00:00:30 \"{$dest}\" -y";
+    shell_exec($cmd);
   }
 
   function createSampleFile($file, $sampleFile){
@@ -47,7 +49,8 @@ class MusicSampler {
     @copy($file, $sampleFile);
 
     $mp3 = new mp3;
-    $mp3->cut_mp3($sampleFile, $sampleFile, 0, 30, 'second', false);
+    $mp3->cut_mp3($$file, $sampleFile, 0, 30, 'second', false);
+    exit;
 
   }
 
