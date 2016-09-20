@@ -419,7 +419,6 @@ function getEvents(){
 // 2th DONE -------------- 8/15/2016
 function getMusics(){
 
-
     /** ALBUM DATA */
 
     $album_posts = get_posts([
@@ -481,6 +480,7 @@ function getMusics(){
 
         $music_fields = get_post_meta($music_post->ID);
         $music_custom_fields = get_fields($music_post->ID);
+
 
         if($music_custom_fields['album'] == null) continue;
 
@@ -1249,6 +1249,71 @@ function musicProductsWithNoDownloadableFile(){
 
     }
     return $ret;
+}
+
+
+function getTotalCountOfProducts(){
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'ASC',
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    $ret['music_count'] = count($music_posts);
+
+    $shop_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'post_date',
+        'order' => 'DESC',
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'no'
+            )
+        )
+    ]);
+
+    $ret['shop_count'] = count($shop_posts);
+
+    return $ret;
+}
+
+
+
+
+
+/** SET VALUE */
+
+function setVirtualToYesForMusic(){
+
+    $music_posts = get_posts([
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_downloadable',
+                'value' => 'yes'
+            )
+        )
+    ]);
+
+    foreach($music_posts as $post){
+        update_post_meta($post->ID, '_virtual', 'yes');
+    }
+
+    return ['success'];
+
 }
 
 
