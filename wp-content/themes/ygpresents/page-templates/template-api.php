@@ -283,10 +283,12 @@ function getTours(){
 
 	foreach($tour_posts as $key => $post){
 		$fields = get_fields($post->ID);
-    $postId = $post->ID;
+        $postId = $post->ID;
 
-    //for order to appear on list page
-    array_push($tour_order, $postId);
+        if($fields['artist'] == null) continue;
+
+        //for order to appear on list page
+        array_push($tour_order, $postId);
 
         /** Tour Post Data */
         $tour_data['tours'][$postId]['id'] = $post->ID;
@@ -390,9 +392,20 @@ function getEvents(){
 	$event_data = array();
     $event_order = array();
 
+
+
+
 	foreach($event_posts as $key => $post){
+
 		$fields = get_fields($post->ID);
         $postId = $post->ID;
+
+
+        //have no idea, how come it's possible saving post without putting a required field...
+        //Maybe, selected artist has been deleted? I have no idea
+        //To avoid this critical issue, we don't include post without artist.
+
+        if($fields['artist'] == null) continue;
 
         array_push($event_order, $postId);
 
@@ -433,6 +446,10 @@ function getMusics(){
     $album_order = array();
 
     foreach($album_posts as $post){
+        $fields = get_fields($post->ID);
+
+        if($fields['artist'] == null) continue;
+
         array_push($album_order, $post->ID);
     }
 
@@ -442,6 +459,18 @@ function getMusics(){
 
         $fields = get_fields($post->ID);
         $postId = $post->ID;
+
+
+        //If no Artist found, delete ID from albums_order
+        //then skip
+        if($fields['artist'] == null) continue;
+//        if($fields['artist'] == null){
+//            if(($key = array_search($post->ID, $album_order)) !== false){
+//                unset($album_order[$key]);
+//
+//            }
+//            continue;
+//        }
 
 
         $album_data['albums'][$postId]['id'] = $post->ID;
@@ -461,7 +490,7 @@ function getMusics(){
         $related_ablum_array = array();
 
 
-        //In case of no related_ablum deleted or drafted
+        //In case of related_ablum deleted or drafted
         if(is_array($fields['related_album'])){
             foreach($fields['related_album'] as $related_ablum){
                 if(in_array($related_ablum, $album_order)){
@@ -474,8 +503,6 @@ function getMusics(){
         $album_data['albums'][$postId]['related_album'] = $related_ablum_array ?: [];
         $album_data['albums'][$postId]['individual_name'] = isset($fields['individual_name']) ? $fields['individual_name'] : '';
     }
-
-
 
     /** MUSIC DATA */
 
@@ -500,8 +527,11 @@ function getMusics(){
         $music_fields = get_post_meta($music_post->ID);
         $music_custom_fields = get_fields($music_post->ID);
 
-
+        //if no album id exist, skip
         if($music_custom_fields['album'] == null) continue;
+
+        //if album that this music belongs to does not exist, then skip
+        if(in_array($music_custom_fields['album'][0], $album_data['albums_order']) == false) continue;
 
         array_push($music_order, $music_post->ID);
 
@@ -553,9 +583,17 @@ function getMusics(){
 
     $index = 0;
 
+
+    //Need to update later if there's time
+    //if no hot_track_order then, skip
     if(count($hot_tracks_order) > 0 && $hot_tracks_order != null) {
         foreach ($hot_tracks_order as $key => $value) {
+            
+            //if key from hot_tracks_order doesn't exist on hot_tracks, then skip
+            //Meaning Even though there is order inputted, it will skip if no checkbox selected.
             if (key_exists($key, $hot_tracks)) {
+
+                //if this hot track id is not in music_order, then skip
                 if(in_array($key, $music_order)){
                     $album_data['hotTracks'][$index][] = $key;
                 }
@@ -648,6 +686,7 @@ function getShops(){
 
         $fields = get_post_meta($post->ID);
         $custom_fields = get_fields($post->ID);
+
         array_push($product_order, $post->ID);
 
         $plan = wc_get_product($post->ID);
