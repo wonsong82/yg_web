@@ -433,11 +433,16 @@ function getMusics(){
     $album_order = array();
 
     foreach($album_posts as $post){
+        array_push($album_order, $post->ID);
+    }
+
+    $album_data['albums_order'] = $album_order;
+
+    foreach($album_posts as $post){
 
         $fields = get_fields($post->ID);
         $postId = $post->ID;
 
-        array_push($album_order, $postId);
 
         $album_data['albums'][$postId]['id'] = $post->ID;
         $album_data['albums'][$postId]['post_title'] = $post->post_title;
@@ -452,11 +457,25 @@ function getMusics(){
         $album_data['albums'][$postId]['album_release_date'] = convertDateFormat($fields['album_release_date']);
 
         $album_data['albums'][$postId]['artist_id'] = $fields['artist'][0];
-        $album_data['albums'][$postId]['related_album'] = $fields['related_album'] ?: [];
+
+        $related_ablum_array = array();
+
+
+        //In case of no related_ablum deleted or drafted
+        if(is_array($fields['related_album'])){
+            foreach($fields['related_album'] as $related_ablum){
+                if(in_array($related_ablum, $album_order)){
+                    array_push($related_ablum_array, $related_ablum);
+                }
+            }
+        }
+
+
+        $album_data['albums'][$postId]['related_album'] = $related_ablum_array ?: [];
         $album_data['albums'][$postId]['individual_name'] = isset($fields['individual_name']) ? $fields['individual_name'] : '';
     }
 
-    $album_data['albums_order'] = $album_order;
+
 
     /** MUSIC DATA */
 
