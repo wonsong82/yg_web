@@ -86,29 +86,28 @@ class PromotionSettings
 
     public function enqueue_admin_scripts(){
         //@todo JavaScript Register if needed
+        $src = plugins_url( 'assets/js/promotion-setting.js', __FILE__ );
+
+        wp_enqueue_script($this->slug.'-function', $src , array() , self::VERSION);
+
     }
 
 
     function get_main_contents() {
 
-        echo "<h1>" . 'Main Contents List' . "</h1>";
-        echo "<h4>" . 'Please select promotional items that need to appear on Main Promotional Page' . "</h4>";
+        $type = isset($_GET['content_type']) ? $_GET['content_type'] : 'product';
 
-        foreach($this->options as $option){
+        $query_arg = array(
+            'post_type' => $type,
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+        );
 
-            $page_type = explode('_' , $option)[0];
-            $post_type = explode('_' , $option)[1];
 
-            if($page_type != 'main')
-                break;
+        $this->save_data('main_' . $type);
 
-            $query_arg = array(
-                'post_type' => $post_type,
-                'post_status' => 'publish',
-                'posts_per_page' => -1,
-            );
-
-            if($option == $this->main_product){
+        switch ($type){
+            case 'product' :
                 $query_arg = array_merge($query_arg , array(
                     'meta_query' => array(
                         array(
@@ -117,17 +116,35 @@ class PromotionSettings
                         )
                     )
                 ));
-            }
 
-            $posts = get_posts($query_arg);
-            $this->setting_form($option.'-group', $option.'_enable' , $option.'_order', $posts);
+                break;
+            default :
+                break;
         }
+
+
+        $posts = get_posts($query_arg);
+
+        $option_enable = get_option('main_' . $type . '_enable');
+        $option_order = get_option('main_' . $type . '_order');
+
+
+        $this->set_top_navi(strtoupper($type));
+
+
+        $this->setting_form(strtoupper($type), $posts, $option_enable, $option_order, 3);
+
     }
 
     function get_hot_track() {
 
-        echo "<h1>" . 'Hot Track List' . "</h1>";
-        echo "<h4>" . 'Please select music items that need to appear on Hot Track List' . "</h4>";
+        $type = 'HOT TRACK';
+
+        if($_POST)
+            $this->save_data($this->hot_track);
+
+        $option_enable = get_option($this->hot_track.'_enable');
+        $option_order = get_option($this->hot_track.'_order');
 
         $posts = get_posts([
             'post_type' => 'product',
@@ -145,56 +162,179 @@ class PromotionSettings
             )
         ]);
 
-        $this->setting_form($this->hot_track.'-group', $this->hot_track.'_enable' , $this->hot_track.'_order', $posts);
+        $this->setting_form($type, $posts, $option_enable, $option_order);
 
     }
 
     function get_hot_blog(){
+        $type = 'HOT BLOG';
 
-        echo "<h1>" . 'Hot Blog List' . "</h1>";
-        echo "<h4>" . 'Please select Blog that need to appear on Hot Blog List' . "</h4>";
+        if($_POST)
+            $this->save_data($this->hot_blog);
+
+
+        $option_enable = get_option($this->hot_blog.'_enable');
+        $option_order = get_option($this->hot_blog.'_order');
+
 
         $posts = get_posts([
             'post_type' => 'blog',
             'post_status' => 'publish',
             'posts_per_page' => -1,
+            'orderby' => 'post_date',
+            'order' => 'DESC'
         ]);
 
-        $this->setting_form($this->hot_blog.'-group', $this->hot_blog.'_enable' , $this->hot_blog.'_order', $posts);
+        $this->setting_form($type, $posts, $option_enable, $option_order);
+    }
+
+
+    function save_data($option){
+
+        if(isset($_POST['enable']) && isset($_POST['order'])){
+            update_option( $option.'_enable', $_POST['enable'] );
+            update_option( $option.'_order' , $_POST['order']);
+        }
+
     }
 
     function no_post_message($ret){
 
     }
 
-    function setting_form($option_group, $enable, $order, $posts){
 
-        if(count($posts) == 0 ) return false;
 
-        $enable_val = get_option($enable);
-        $order_val = get_option($order);
+    function set_top_navi($type){
+        $url = admin_url().'admin.php?page=contents-manager';
         ?>
-        <form method="post" action="options.php">
-            <?php settings_fields($option_group); ?>
-            <table class="table-style-two" width="40%">
-                <?php
-                foreach ($posts as $key => $post) {
-                    $id = $post->ID;
-                    ?>
-                    <?php if($key == 0){?>
-                        <tr><th colspan="4"><?= strtoupper($post->post_type) ?></th></tr>
-                    <?php } ?>
-                    <tr>
-                        <td width="5%"><input name="<?=$enable?>[<?=$id?>]" type="checkbox"
-                                <?=isset($enable_val[$id]) == '1' ? 'checked' : '' ?> value="<?= $post->post_type ?>"/></td>
-                        <td width="5%"><input name="<?=$order?>[<?=$id?>]" type="number" value="<?=$order_val[$id]?>"</td>
-                        <td width="50%"><?=strlen($post->post_title) > 50 ? substr($post->post_title, 0 , 50).'...' : $post->post_title?></td>
-                    </tr>
-                <?php } ?>
-            </table>
-            <?php submit_button(); ?>
-        </form>
+
+
+
+        <div class="top-navi">
+            <ul>
+                <li class="<?= $type == 'PRODUCT' ? 'active' : '' ?>"><a href="<?=$url?>&content_type=product">PRODUCT</a></li>
+                <li class="<?= $type == 'TOUR' ? 'active' : '' ?>"><a href="<?=$url?>&content_type=tour">TOUR</a></li>
+                <li class="<?= $type == 'EVENT' ? 'active' : '' ?>"><a href="<?=$url?>&content_type=event">EVENT</a></li>
+                <li class="<?= $type == 'ALBUM' ? 'active' : '' ?>"><a href="<?=$url?>&content_type=album">ALBUM</a></li>
+            </ul>
+        </div>
+        <div style="clear:both">
+
+        </div>
         <?php
+    }
+
+    function setting_form($type, $posts, $option_enable, $option_order, $requiredCnt = -1){
+        ?>
+
+        <div class="container">
+
+            <form id="form" method="post" action="<?php echo $_SERVER['REQUEST_URI'] ; ?>">
+                <h1><?=$type?></h1>
+                <button class="btn-submit">APPLY PROMOTION</button>
+                <input type="hidden" id="required_cnt" value="<?=$requiredCnt?>">
+                <input type="hidden" id="curCheckCnt" value="<?=count($option_enable)?>">
+
+                <table class="widefat fixed" cellpadding="10">
+                    <thead>
+                        <tr>
+                            <th id="cb" class="manage-column column-cb check-column" scope="col"></th>
+                            <th width="10%" id="thumb" class="manage-column column-thumb">THUMB</th>
+                            <th width="10%" id="columnname" class="manage-column column-columnname" scope="col">POST ID</th>
+                            <th id="columnname" class="manage-column column-columnname" scope="col">TITLE</th>
+                            <th width="15%" id="columnname" class="manage-column column-columnname" scope="col">DATE</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php foreach($posts as $key => $post){
+                            $postId = $post->ID;
+
+                            $trClass = $key % 2 == 0 ? 'alternate' : '';
+
+                            $title = strlen($post->post_title) > 115 ? substr($post->post_title, 0 , 115).'...' : $post->post_title ;
+
+                            $image = $this->getImage($type, $post);
+                        ?>
+                            <tr class="<?=$trClass?>">
+                                <th class="check-column" scope="row">
+                                    <input type="checkbox" id="enable_<?=$postId?>" name="enable[<?=$postId?>]"
+                                        <?=isset($option_enable[$postId]) == true ? 'checked' : '' ?>
+                                        value="<?= $post->post_type ?>"
+                                    />
+                                </th>
+
+                                <td class="thumb"><img class="thumb-image" src="<?=$image?>" alt=""></td>
+
+
+                                <td>
+                                    <div><?=$postId?></div>
+                                    <div style="margin-top: 10px">
+                                        <input name="order[<?=$postId?>]" id="order_<?=$postId?>" type="number"
+                                                <?=isset($option_enable[$postId]) == true ? '' : 'disabled'?>
+                                               value="<?=isset($option_enable[$postId]) == true ? $option_order[$postId] : '' ?>"
+                                        />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><?=$title?></div>
+                                    <div style="margin-top: 10px">
+                                        <a href="/wp-admin/post.php?post=<?=$postId?>&action=edit">Edit Contents</a>
+                                    </div>
+                                </td>
+                                <td class="text-align__center">2016/09/14</td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+                <button class="btn-submit" style="margin-top:6px"> APPLY PROMOTION</button>
+
+            </form>
+        </div>
+<?php
+
+    }
+
+    function getImage($type, $post){
+
+        $imageUrl = '';
+        $noImage = plugins_url( 'assets/images/placeholder.png', __FILE__ );
+
+        switch($type){
+            case 'HOT TRACK':
+                $albumId = get_field('album', $post->ID);
+                if(is_array($albumId)){
+                    $imageUrl = get_field('thumbnail', $albumId[0]);
+                }
+
+                break;
+
+            case 'HOT BLOG':
+                $imageUrl = get_field('main_image', $post->ID);
+                break;
+
+
+            case 'PRODUCT':
+                $imageUrl = get_field('thumbnail_2x2', $post->ID);
+                break;
+
+            case 'EVENT':
+                $imageUrl = get_field('main_image', $post->ID);
+                break;
+
+            case 'TOUR':
+                $imageUrl = get_field('main_image', $post->ID);
+                break;
+
+            case 'ALBUM':
+                $imageUrl = get_field('thumbnail', $post->ID);
+                break;
+
+            default:
+                break;
+
+        }
+        return $imageUrl ?: $noImage;
     }
 }
 
