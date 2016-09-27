@@ -208,8 +208,6 @@ class PromotionSettings
         $url = admin_url().'admin.php?page=contents-manager';
         ?>
 
-
-
         <div class="top-navi">
             <ul>
                 <li class="<?= $type == 'PRODUCT' ? 'active' : '' ?>"><a href="<?=$url?>&content_type=product">PRODUCT</a></li>
@@ -282,7 +280,7 @@ class PromotionSettings
                                         <a href="/wp-admin/post.php?post=<?=$postId?>&action=edit">Edit Contents</a>
                                     </div>
                                 </td>
-                                <td class="text-align__center">2016/09/14</td>
+                                <td class="text-align__center"><?=date("Y-m-d", strtotime($post->post_date))?></td>
                             </tr>
                         <?php } ?>
                     </tbody>
@@ -310,6 +308,8 @@ class PromotionSettings
                 break;
 
             case 'HOT BLOG':
+            case 'EVENT':
+            case 'TOUR':
                 $imageUrl = get_field('main_image', $post->ID);
                 break;
 
@@ -318,13 +318,6 @@ class PromotionSettings
                 $imageUrl = get_field('thumbnail_2x2', $post->ID);
                 break;
 
-            case 'EVENT':
-                $imageUrl = get_field('main_image', $post->ID);
-                break;
-
-            case 'TOUR':
-                $imageUrl = get_field('main_image', $post->ID);
-                break;
 
             case 'ALBUM':
                 $imageUrl = get_field('thumbnail', $post->ID);
