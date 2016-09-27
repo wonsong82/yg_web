@@ -270,7 +270,7 @@ function getArtists(){
 
 function getTours(){
 
-	$tour_posts = get_posts([
+    $tour_posts = get_posts([
 		'post_type' => 'tour',
         'post_status' => 'publish',
         'posts_per_page' => -1,
@@ -324,12 +324,14 @@ function getTours(){
 
         foreach($fields['tour_schedule'] as $schedule){
 
+
             $tour_date = convertDateFormat($schedule['tour_date']);
             $tour_data['tours'][$postId]['tour_schedule'][$index]['tour_date'] = $tour_date;
 
 
             if($index == 0) $begin = $tour_data['tours'][$postId]['start_date'] = $tour_date;
             else if(count($fields['tour_schedule'])-1 == $index) $end = $tour_data['tours'][$post->ID]['end_date'] = $tour_date;
+
 
 
             $dtTour = new DateTime($tour_date);
@@ -348,7 +350,11 @@ function getTours(){
             $tour_data['tours'][$postId]['tour_schedule'][$index]['ticket_link'] = $schedule['ticket_link'];
             $tour_data['tours'][$postId]['tour_schedule'][$index]['ticket_availability'] = $schedule['ticket_availability'];
             $index++;
+
         }
+
+        //When Tour schedule 1 exist.
+        if($end == null) $end = $begin;
 
         $begin = new DateTime(date("Y-m-d", strtotime('last sunday', strtotime($begin))));
         $end = new DateTime(date("Y-m-d", strtotime('saturday this week', strtotime($end))));
@@ -734,17 +740,31 @@ function getShops(){
 
           //Get All Attributes this product used along with sort ordering
           $all_attributes = $plan->get_attributes();
-            $att_temp = array();
-          foreach($all_attributes as $attr){
+
+          $att_temp = array();
+          $attr_order_temp = array();
+
+            foreach($all_attributes as $attr){
 
             $terms = get_the_terms($post->ID, $attr['name']);
 
+              $attr_order = array_map('trim', explode(',', $plan->get_attribute($attr['name'])));
+
+
               foreach($terms as $term){
+                  $key = array_search($term->name, $attr_order);
+                  $attr_order_temp['attribute_'.$attr['name']][$key] = $term->slug;
                   $att_temp['attribute_'.$attr['name']][$term->slug] = $term->name;
               }
+
+              ksort($attr_order_temp['attribute_'.$attr['name']]);
+
           }
 
           $shop_data['products'][$post->ID]['attributes'] = $att_temp;
+          $shop_data['products'][$post->ID]['attributes_order'] = $attr_order_temp;
+
+
 
           $variations = $plan->get_available_variations();
           $default = $plan->get_variation_default_attributes();
@@ -813,6 +833,39 @@ function getShops(){
 
     return $shop_data;
 
+}
+
+
+function test(){
+
+    $postId = 536;
+
+    $post = get_post($postId);
+    $plan = wc_get_product($postId);
+
+    $all_attributes = $plan->get_attributes();
+
+    foreach($all_attributes as $attr){
+        $terms = get_the_terms($postId, $attr['name']);
+
+        $attr_order = array_map('trim', explode(',', $plan->get_attribute($attr['name'])));
+        $new_attr_order = array();
+
+        foreach($terms as $term){
+            $key = array_search($term->name, $attr_order);
+            $new_attr_order[$key] = $term->slug;
+
+            $att_temp['attribute_'.$attr['name']][$term->slug] = $term->name;
+        }
+
+        ksort($new_attr_order);
+
+
+    }
+
+
+
+    return $new_attr_order;
 }
 
 function getPromotions(){
