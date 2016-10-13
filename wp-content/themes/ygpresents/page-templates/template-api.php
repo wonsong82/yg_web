@@ -418,7 +418,7 @@ function getEvents(){
 
         $event_data['events'][$postId]['id'] = $post->ID;
         $event_data['events'][$postId]['post_title'] = $post->post_title;
-        $event_data['events'][$postId]['post_content'] = htmlentities(nl2br($post->post_content));
+        $event_data['events'][$postId]['post_content'] = nl2br($post->post_content);
         $event_data['events'][$postId]['post_date'] = convertDateFormat($post->post_date);
         $event_data['events'][$postId]['main_image'] = $fields['main_image'];
         $event_data['events'][$postId]['thumb_1x1'] = $fields['thumbnail'];
