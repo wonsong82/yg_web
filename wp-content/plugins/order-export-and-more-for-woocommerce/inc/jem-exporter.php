@@ -255,7 +255,7 @@ class JEM_export_lite {
 					<h2 class="nav-tab-wrapper">
 						<a data-tab-id="export" class="nav-tab ' . $export_active . '" href="admin.php?page=JEM_EXPORT_MENU&amp;tab=export-data"">Export Data</a>
 						<a data-tab-id="setting" class="nav-tab ' . $settings_active . '" href="admin.php?page=JEM_EXPORT_MENU&amp;tab=settings">Settings</a>
-						<a data-tab-id="meta" class="nav-tab ' . $meta_active . '" href="admin.php?page=JEM_EXPORT_MENU&amp;tab=meta">Meta</a>
+						
 					</h2>
 					</div>
 			
@@ -311,7 +311,7 @@ class JEM_export_lite {
 		  <li><a href="#field-tab" id="vert-field-tab" class="dashicons-before dashicons-media-spreadsheet">Fields</a></li>
 		  <li><a href="#filters-tab" id="vert-filter-tab"  class="dashicons-before dashicons-filter">Filters</a></li>
 		  <li><a href="#labels-tab" id="vert-label-tab" class="dashicons-before dashicons-tag">Labels</a></li>
-		  <li><a href="#scheduled-tab" id="vert-scheduled-tab" class="dashicons-before dashicons-clock">Scheduled</a></li>
+		  
 								</ul>
 		<div id="field-tab" class="jemex-panel">
 		<div class="jemex-inner-panel">

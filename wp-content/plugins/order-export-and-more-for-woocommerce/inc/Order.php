@@ -146,102 +146,88 @@ class Order extends BaseEntity{
 		);
 		
 		
-		//**************************
-		$fields['order_ccy'] = array(
-				'disabled' => true,
-				'name' => 'order_ccy',
-				'placeholder' => __('Order Currency', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['order_discount'] = array(
-				'disabled' => true,
-				'name' => 'order_discount',
-				'placeholder' => __('Order Discount', JEM_EXP_DOMAIN)
-		
-		);
-		$fields['coupon_code'] = array(
-				'disabled' => true,
-				'name' => 'coupon_code',
-				'placeholder' => __('Coupon Code', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['payment_gateway'] = array(
-				'disabled' => true,
-				'name' => 'payment_gateway',
-				'placeholder' => __('Payment Gateway', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['shipping_method'] = array(
-				'disabled' => true,
-				'name' => 'shipping_method',
-				'placeholder' => __('Shipping Method', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['shipping_weight'] = array(
-				'disabled' => true,
-				'name' => 'shipping_weight',
-				'placeholder' => __('Shipping Weight', JEM_EXP_DOMAIN)
-		
-		);
-		$fields['customer_note'] = array(
-				'disabled' => true,
-				'name' => 'customer_note',
-				'placeholder' => __('Customer Message', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_addr_line1'] = array(
-				'disabled' => true,
-				'name' => 'billing_addr_line1',
-				'placeholder' => __('Billing Address Line 1', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_addr_line2'] = array(
-				'disabled' => true,
-				'name' => 'billing_addr_line2',
-				'placeholder' => __('Billing Address Line 2', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_city'] = array(
-				'disabled' => true,
-				'name' => 'billing_city',
-				'placeholder' => __('Billing City', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_state'] = array(
-				'disabled' => true,
-				'name' => 'billing_state',
-				'placeholder' => __('Billing State', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_postcode'] = array(
-				'name' => 'billing_postcode',
-				'disabled' => true,
-				'placeholder' => __('Billing Zip/Postcode', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_country'] = array(
-				'disabled' => true,
-				'name' => 'billing_country',
-				'placeholder' => __('Billing Country', JEM_EXP_DOMAIN)
-		
-		);
-		
-		$fields['billing_phone'] = array(
-				'disabled' => true,
-				'name' => 'billing_phone',
-				'placeholder' => __('Billing Phone Number', JEM_EXP_DOMAIN)
-		
-		);
+//		//**************************
+//		$fields['order_ccy'] = array(
+//				'name' => 'order_ccy',
+//				'placeholder' => __('Order Currency', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['order_discount'] = array(
+//				'name' => 'order_discount',
+//				'placeholder' => __('Order Discount', JEM_EXP_DOMAIN)
+//
+//		);
+//		$fields['coupon_code'] = array(
+//				'name' => 'coupon_code',
+//				'placeholder' => __('Coupon Code', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['payment_gateway'] = array(
+//				'name' => 'payment_gateway',
+//				'placeholder' => __('Payment Gateway', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['shipping_method'] = array(
+//				'name' => 'shipping_method',
+//				'placeholder' => __('Shipping Method', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['shipping_weight'] = array(
+//				'name' => 'shipping_weight',
+//				'placeholder' => __('Shipping Weight', JEM_EXP_DOMAIN)
+//
+//		);
+//		$fields['customer_note'] = array(
+//				'name' => 'customer_note',
+//				'placeholder' => __('Customer Message', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_addr_line1'] = array(
+//				'name' => 'billing_addr_line1',
+//				'placeholder' => __('Billing Address Line 1', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_addr_line2'] = array(
+//				'name' => 'billing_addr_line2',
+//				'placeholder' => __('Billing Address Line 2', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_city'] = array(
+//				'name' => 'billing_city',
+//				'placeholder' => __('Billing City', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_state'] = array(
+//				'name' => 'billing_state',
+//				'placeholder' => __('Billing State', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_postcode'] = array(
+//				'name' => 'billing_postcode',
+//				'placeholder' => __('Billing Zip/Postcode', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_country'] = array(
+//				'name' => 'billing_country',
+//				'placeholder' => __('Billing Country', JEM_EXP_DOMAIN)
+//
+//		);
+//
+//		$fields['billing_phone'] = array(
+//				'name' => 'billing_phone',
+//				'placeholder' => __('Billing Phone Number', JEM_EXP_DOMAIN)
+//
+//		);
 		return $fields;
 	}
 	

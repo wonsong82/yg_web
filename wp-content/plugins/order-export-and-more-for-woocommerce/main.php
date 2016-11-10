@@ -27,11 +27,11 @@ global $jem_export_globals;
 $entities = array();
 $entities[] = "Product";
 $entities[] = "Order";
-$entities[] = "Customer";
-$entities[] = "Shipping";
-$entities[] = "Coupon";
-$entities[] = "Categories";
-$entities[] = "Tags";
+//$entities[] = "Customer";
+//$entities[] = "Shipping";
+//$entities[] = "Coupon";
+//$entities[] = "Categories";
+//$entities[] = "Tags";
 
 //Create an array of which entities are active
 $active = array();
