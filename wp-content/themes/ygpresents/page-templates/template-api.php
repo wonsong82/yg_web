@@ -784,7 +784,7 @@ function getShops(){
 
 
               $curTime = time();
-              $v_salePrice = $variation['display_price'];
+              $v_salePrice = get_post_meta($variation['variation_id'], '_sale_price')[0];
 
               //sale Price 존재 여부 파악
               if($v_salePrice == null){
