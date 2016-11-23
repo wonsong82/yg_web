@@ -778,8 +778,45 @@ function getShops(){
 
           foreach($variations as $k => $variation){
             $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
+
+              //regular price
             $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
-            $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $variation['display_price'];
+
+
+              $curTime = time();
+              $v_salePrice = $variation['display_price'];
+
+              //sale Price 존재 여부 파악
+              if($v_salePrice == null){
+                  //sale Price exist
+              }else{
+                  //sale Price not exist
+                  //sale 기간 파악
+
+                  //variation 내에는 세일 관련 기간을 파악 할 수 없음. variation ID 로 등록 된 Post 의 meta data 호출 하여 from, to 정보 읽어 옴
+                  $v_sale_price_dates_from = get_post_meta($variation['variation_id'], '_sale_price_dates_from')[0];
+                  $v_sale_price_dates_to = get_post_meta($variation['variation_id'], '_sale_price_dates_to')[0];
+
+
+                  if($v_sale_price_dates_from == null && $v_sale_price_dates_to == null){
+                      //기간이 존재 하지 않을 시에는 sale price 적용
+                  }else{
+                      if($v_sale_price_dates_from < $curTime && $curTime < $v_sale_price_dates_to){
+                          // sale 기간에 포함 됨
+                      }else{
+                          // sale 기간에 포함 되지 않음
+                          // sale price 를 null 로 set
+                          $v_salePrice = '';
+                      }
+                  }
+
+              }
+              
+              //sale price
+            $shop_data['products'][$post->ID]['variation'][$k]['display_price'] = $v_salePrice;
+
+
+
             $shop_data['products'][$post->ID]['variation'][$k]['sku'] = $variation['sku'];
             $shop_data['products'][$post->ID]['variation'][$k]['image'] = $variation['image_src'];
 
@@ -804,8 +841,40 @@ function getShops(){
             $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
           }
         }else{
-          $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
-          $shop_data['products'][$post->ID]['_sale_price'] = $fields['_sale_price'][0];
+
+            $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
+
+            $curTime = time();
+            $salePrice = $fields['_sale_price'][0];
+
+
+
+            //sale Price 존재 여부 파악
+            if($salePrice == null){
+                //sale Price not exist
+            }else{
+                //sale Price exist
+                $_sale_price_dates_from = $fields['_sale_price_dates_from'][0];
+                $_sale_price_dates_to = $fields['_sale_price_dates_to'][0];
+
+                //기간 존재 유무 파악 우선.
+                if($_sale_price_dates_from == null && $_sale_price_dates_to == null){
+                    //기간이 존재 하지 않을 시에는 sale price 적용
+                }else{
+                    //sale 기간 파악
+                    if($_sale_price_dates_from < $curTime && $curTime < $_sale_price_dates_to){
+                        // sale 기간에 포함 됨. sale price 적용
+                    }else{
+                        // sale 기간에 포함 되지 않음
+                        // sale price 를 null 로 set
+                        $salePrice = '';
+                    }
+                }
+            }
+
+
+
+          $shop_data['products'][$post->ID]['_sale_price'] = $salePrice;
           $shop_data['products'][$post->ID]['_sku'] = $fields['_sku'][0];
         }
     }
