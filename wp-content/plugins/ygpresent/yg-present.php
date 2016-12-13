@@ -8,6 +8,7 @@ Description: YG Present
  */
 
 require_once('class/promotion-settings.php' );
+require_once ('class/Banner.php');
 require_once('yg-email-subscriber.php');
 require_once ('404-redirect.php');
 

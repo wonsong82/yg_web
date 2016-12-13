@@ -663,6 +663,23 @@ function getBlogs(){
         $blog_data['hot_posts'] = [];
     }
 
+    $blog_banner_posts = get_posts([
+        'post_type' => 'blog-banner',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'post_date'
+    ]);
+
+    foreach($blog_banner_posts as $key => $post){
+        $postId = $post->ID;
+        $fields = get_fields($postId);
+
+        $blog_data['banner'][$key]['thumbnail'] = $fields['thumbnail'];
+        $blog_data['banner'][$key]['thumbnail_1'] = $fields['thumbnail_1'];
+        $blog_data['banner'][$key]['thumbnail_2'] = $fields['thumbnail_2'];
+        $blog_data['banner'][$key]['target_url'] = $fields['target_url'];
+    }
+
 
 
     return $blog_data;
@@ -690,9 +707,10 @@ function getShops(){
     $product_order = array();
     foreach($shop_posts as $key => $post){
 
-
         $fields = get_post_meta($post->ID);
         $custom_fields = get_fields($post->ID);
+
+
 
         array_push($product_order, $post->ID);
 
@@ -779,6 +797,9 @@ function getShops(){
           foreach($variations as $k => $variation){
             $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
 
+              //Stock Management
+              $shop_data['products'][$post->ID]['variation'][$k]['_stock_status'] = get_post_meta($variation['variation_id'], '_stock_status')[0];
+
               //regular price
             $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
 
@@ -842,6 +863,10 @@ function getShops(){
           }
         }else{
 
+            //Stock Management
+            $shop_data['products'][$post->ID]['_stock_status'] = $fields['_stock_status'][0];
+
+            //Price Management
             $shop_data['products'][$post->ID]['_regular_price'] = $fields['_regular_price'][0];
 
             $curTime = time();
@@ -978,6 +1003,27 @@ function getPromotions(){
       }
     }
   }
+
+    $main_banner_posts = get_posts([
+        'post_type' => 'main-banner',
+        'post_status' => 'publish',
+        'posts_per_page' => 3,
+        'orderby' => 'post_date'
+    ]);
+
+    $main_banner_data = array();
+
+
+    foreach($main_banner_posts as $key => $post){
+        $postId = $post->ID;
+        $fields = get_fields($postId);
+
+        $promotion_data['banner'][$key]['thumbnail_2x1'] = $fields['thumbnail_2x1'];
+        $promotion_data['banner'][$key]['thumbnail_3x2'] = $fields['thumbnail_3x2'];
+        $promotion_data['banner'][$key]['thumbnail'] = $fields['thumbnail'];
+        $promotion_data['banner'][$key]['target_url'] = $fields['target_url'];
+    }
+
 
   return $promotion_data;
 }

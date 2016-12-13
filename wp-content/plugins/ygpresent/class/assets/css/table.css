@@ -65,6 +65,42 @@ button.btn-submit:hover{
 
 }
 
+
+.btn-image-upload{
+    color:#dc650e;
+    padding: 4px 8px;
+    position: relative;
+    top: -3px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    text-shadow: none;
+    border-radius: 2px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.btn-image-upload:hover{
+    color: #f7f7f7;
+    background: #dc650e;
+}
+
+span.size-info{
+    color: black;
+    margin-left: 40px;
+}
+
+span.instruction-text{
+    color: #666666;
+    font-size: 12px;
+    text-shadow: 0 1px 0 #ffffff;
+}
+
+span.instruction-text.red{
+    color: red;
+}
+
+
 .container {
     width:70%;
 }
@@ -72,6 +108,11 @@ button.btn-submit:hover{
 .thumb-image{
     width: 50px;
     height: 50px;
+}
+
+.thumb-image.banner{
+    width: 100px;
+    height: 100px;
 }
 
 .top-navi{
@@ -107,7 +148,6 @@ button.btn-submit:hover{
 .top-navi li a {
     text-decoration: none !important;
 }
-
 
 
 @media only screen and (max-width: 500px) {

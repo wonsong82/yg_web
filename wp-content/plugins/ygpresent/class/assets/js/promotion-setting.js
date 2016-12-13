@@ -3,17 +3,11 @@ jQuery(document).ready(function($){
 	var curCheckCnt = $('#curCheckCnt').val();
 	var requiredCnt = $('#required_cnt').val();
 
-	console.log(curCheckCnt);
-	console.log(requiredCnt);
-
-	$('.btn-submit').click(function(e){
+	$('.btn-submit.promotion').click(function(e){
 		e.preventDefault();
 
 		// -1 means no need to check current checkCnt
 		if(requiredCnt != -1){
-
-			console.log(curCheckCnt);
-			console.log(requiredCnt);
 
 			if(requiredCnt != curCheckCnt){
 				alert('You have to check ' + requiredCnt + ' items to proceed. Currently ' + curCheckCnt + ' checked.');
@@ -44,7 +38,6 @@ jQuery(document).ready(function($){
 			curCheckCnt--;
 		}
 
-		console.log(curCheckCnt);
 	}
 
 });

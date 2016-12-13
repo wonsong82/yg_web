@@ -229,7 +229,7 @@ class PromotionSettings
 
             <form id="form" method="post" action="<?php echo $_SERVER['REQUEST_URI'] ; ?>">
                 <h1><?=$type?></h1>
-                <button class="btn-submit">APPLY PROMOTION</button>
+                <button class="btn-submit promotion">APPLY PROMOTION</button>
                 <input type="hidden" id="required_cnt" value="<?=$requiredCnt?>">
                 <input type="hidden" id="curCheckCnt" value="<?=count($option_enable)?>">
 
@@ -285,7 +285,7 @@ class PromotionSettings
                         <?php } ?>
                     </tbody>
                 </table>
-                <button class="btn-submit" style="margin-top:6px"> APPLY PROMOTION</button>
+                <button class="btn-submit promotion" style="margin-top:6px"> APPLY PROMOTION</button>
 
             </form>
         </div>

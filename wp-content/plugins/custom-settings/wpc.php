@@ -9,7 +9,7 @@
     */
 
 /* Set your theme name & shortname to get options fields*/
-$themename = "YG Settings";
+$themename = "WordPress Custom Settings";
 $shortname = "wpc";
 include( plugin_dir_path( __FILE__ ) . 'inc/wpc_class.php');
 include( plugin_dir_path( __FILE__ ) . 'inc/shortcodes.php');
@@ -97,7 +97,6 @@ $wp_cats = array();
 	 
 	function wpc_add_admin() {
 	global $themename, $shortname ,$wpcInstance;
-
 	if ( isset($_GET['page']) && $_GET['page'] =='wpc-management' && isset($_REQUEST['action']) ) {
 			if ( 'save' == $_REQUEST['action'] ) {
 			foreach ($_REQUEST as $key=>$value) {
