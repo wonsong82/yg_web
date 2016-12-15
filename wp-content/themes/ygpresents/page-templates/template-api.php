@@ -679,8 +679,6 @@ function getBlogs(){
         $fields = get_fields($postId);
 
         $blog_data['banner'][$key]['thumbnail'] = $fields['thumbnail'];
-        $blog_data['banner'][$key]['thumbnail_1'] = $fields['thumbnail_1'];
-        $blog_data['banner'][$key]['thumbnail_2'] = $fields['thumbnail_2'];
         $blog_data['banner'][$key]['target_url'] = $fields['target_url'];
     }
 
