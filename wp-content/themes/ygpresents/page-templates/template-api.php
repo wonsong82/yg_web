@@ -101,6 +101,10 @@ function generateCache($postType){
       file_put_contents($cacheDir . '/getMusics.json', json_encode(getMusics()));
       file_put_contents($cacheDir . '/getShops.json', json_encode(getShops()));
     break;
+    case 'blog-banner':
+      file_put_contents($cacheDir . '/getBlogs.json', json_encode(getBlogs()));
+    break;
+
     default:
   }
 }
