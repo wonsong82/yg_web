@@ -101,6 +101,10 @@ function generateCache($postType){
       file_put_contents($cacheDir . '/getMusics.json', json_encode(getMusics()));
       file_put_contents($cacheDir . '/getShops.json', json_encode(getShops()));
     break;
+    case 'blog-banner':
+      file_put_contents($cacheDir . '/getBlogs.json', json_encode(getBlogs()));
+    break;
+
     default:
   }
 }
@@ -675,8 +679,6 @@ function getBlogs(){
         $fields = get_fields($postId);
 
         $blog_data['banner'][$key]['thumbnail'] = $fields['thumbnail'];
-        $blog_data['banner'][$key]['thumbnail_1'] = $fields['thumbnail_1'];
-        $blog_data['banner'][$key]['thumbnail_2'] = $fields['thumbnail_2'];
         $blog_data['banner'][$key]['target_url'] = $fields['target_url'];
     }
 
@@ -794,14 +796,19 @@ function getShops(){
             $default_att['attribute_'.$key_att] = $item;
           }
 
+          $isOutofStock = true;
+
           foreach($variations as $k => $variation){
             $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
 
               //Stock Management
-              $shop_data['products'][$post->ID]['variation'][$k]['_stock_status'] = get_post_meta($variation['variation_id'], '_stock_status')[0];
+              $stock_status = get_post_meta($variation['variation_id'], '_stock_status')[0];
+              $shop_data['products'][$post->ID]['variation'][$k]['_stock_status'] = $stock_status;
+              if($stock_status == 'instock') $isOutofStock = false;
+
 
               //regular price
-            $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
+              $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
 
 
               $curTime = time();
@@ -861,6 +868,9 @@ function getShops(){
 
             $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
           }
+
+          $shop_data['products'][$post->ID]['_stock_status'] = $isOutofStock ==  true ? 'outofstock' : 'instock';
+
         }else{
 
             //Stock Management

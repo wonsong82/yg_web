@@ -34,7 +34,7 @@ class YGAPICache {
         }
     }
 
-    if(in_array($postType, ['artist', 'event', 'tour', 'album', 'blog', 'product'])) {
+    if(in_array($postType, ['artist', 'event', 'tour', 'album', 'blog', 'product','blog-banner'])) {
       curl_setopt($ch, CURLOPT_URL, $siteUrl . '/api/generateCache?' . 'type=' . $postType);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);      
