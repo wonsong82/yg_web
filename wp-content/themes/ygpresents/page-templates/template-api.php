@@ -796,14 +796,19 @@ function getShops(){
             $default_att['attribute_'.$key_att] = $item;
           }
 
+          $isOutofStock = true;
+
           foreach($variations as $k => $variation){
             $shop_data['products'][$post->ID]['variation'][$k]['variation_id'] = $variation['variation_id'];
 
               //Stock Management
-              $shop_data['products'][$post->ID]['variation'][$k]['_stock_status'] = get_post_meta($variation['variation_id'], '_stock_status')[0];
+              $stock_status = get_post_meta($variation['variation_id'], '_stock_status')[0];
+              $shop_data['products'][$post->ID]['variation'][$k]['_stock_status'] = $stock_status;
+              if($stock_status == 'instock') $isOutofStock = false;
+
 
               //regular price
-            $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
+              $shop_data['products'][$post->ID]['variation'][$k]['display_regular_price'] = $variation['display_regular_price'];
 
 
               $curTime = time();
@@ -863,6 +868,9 @@ function getShops(){
 
             $shop_data['products'][$post->ID]['variation'][$k]['id_default'] = $is_default;
           }
+
+          $shop_data['products'][$post->ID]['_stock_status'] = $isOutofStock ==  true ? 'outofstock' : 'instock';
+
         }else{
 
             //Stock Management
