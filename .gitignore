@@ -41,6 +41,7 @@ static/app.js
 !*.ico
 !manifest.json
 !browserconfig.xml
+!dashradio-redirect.html
 
 # ignore all files starting with .
 .*
