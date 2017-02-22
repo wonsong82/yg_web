@@ -263,6 +263,7 @@ function getArtists(){
         $artist_data['artists'][$post->ID]['themeColor'] = $fields['theme_color'];
         $artist_data['artists'][$post->ID]['textColor'] = $fields['font_color'];
         $artist_data['artists'][$post->ID]['twitter_username'] = $fields['twitter_username'];
+        $artist_data['artists'][$post->ID]['visibility'] = $fields['visibility'];
     }
 
     $artist_data['artists_order'] = $artist_order;
