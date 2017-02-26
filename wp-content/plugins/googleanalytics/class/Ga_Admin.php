@@ -188,7 +188,7 @@ class Ga_Admin {
 	 * Builds plugin's menu structure.
 	 */
 	public static function admin_menu_googleanalytics() {
-		if ( current_user_can( 'manage_options' ) ) {
+		if ( current_user_can( 'edit_users' ) ) {
 			add_menu_page( 'Google Analytics', 'Google Analytics', 'edit_users', 'googleanalytics', 'Ga_Admin::statistics_page_googleanalytics', 'dashicons-chart-line', 1000 );
 			add_submenu_page( 'googleanalytics', 'Google Analytics', __( 'Dashboard' ), 'edit_users', 'googleanalytics', 'Ga_Admin::statistics_page_googleanalytics' );
 			add_submenu_page( 'googleanalytics', 'Google Analytics', __( 'Trending Content' ), 'edit_users', 'googleanalytics/trending', 'Ga_Admin::trending_page_googleanalytics' );
